@@ -1,0 +1,5 @@
+Sunrise and sunset data downloaded from https://aa.usno.navy.mil/data/RS_OneYear
+
+Moonrise and set data also available
+
+You enter time zone (EST for Panama) and location (BCI entered) and it outputs a table of sunrise and sunset times
