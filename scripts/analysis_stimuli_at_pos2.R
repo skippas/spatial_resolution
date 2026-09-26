@@ -6,7 +6,8 @@ rm(list = ls())
 bin_fill <- c('1' = '#27b376', '0' = '#bf212f')
 fill_scale <- scale_fill_manual(name = "first_decision", values = bin_fill)
 
-source("scripts/loading_cleaning_maze_data.r")
+#source("scripts/loading_cleaning_maze_data.r")
+decisions <- read.csv("/Users/andrescheepers/Library/CloudStorage/OneDrive-LundUniversity/PhD/projects/panama/analyses/spatial_resolution/data/cleaned_light_level_appended/spatial_resolution_experiment_cleaned_light_level_appended.csv")
 
 # filtering ####
 # Filter out the training phases (patterns at pos 1, no alternation of side, or bee enters wrong hole)
@@ -17,7 +18,6 @@ decisions <- decisions %>% filter((nest == "2.6V" | nest == "1.5H" | nest == "1.
                             (training_or_testing != "training" | is.na(training_or_testing)) & 
                               pos_vpatt_ret == 2 &
                             date > "2024-04-16")
-
 # ensure no NAs in decisions
 sum(is.na(decisions$first_decision))
 
@@ -25,7 +25,6 @@ sum(is.na(decisions$first_decision))
 table(decisions$patt_freq_ret, decisions$side_vpatt_ret,
       decisions$session, decisions$nest)
 table(decisions$nest,  decisions$side_vpatt_ret, decisions$patt_freq_ret)
-
 #####
 # During the first phase of 0.05 testing for nest 1.4V, there was some uneven side-to-side testing for 0.05 pattern (other patterns even). Was this a training phase and i focused on the side they couldnt do, or kept them on that side until they could do it then started testing? 
 # Perhaps surprising that it isnt 100% given turning freq data and bees were making mistakes on it. Although could be attributed to training or that lines dont really appear like lines, or to do with contrast per area of visual field.
@@ -95,7 +94,7 @@ ggsave("plots/barp_countsCorrectAcrossSF.png",
   
 # Incorporating light level ####
 
-# How even is sampling across light level?
+# sampling count by session (am / pm)
 p <- ggplot(decisions, aes(x = light_pred, fill = session))+
   geom_histogram(data = subset(decisions, session == 'am'),
                  aes(y = ..count..), binwidth = 1)+
