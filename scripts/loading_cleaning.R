@@ -6,8 +6,6 @@ m2decisions <- readxl::read_xlsx("data/Spatial_resolution_experiment.xlsx",
                                  sheet = "maze2", na = "NA", n_max = 1000)
 m1decisions <- readxl::read_xlsx("data/Spatial_resolution_experiment.xlsx",
                                  sheet = "maze1", na = "NA", n_max = 1000)
-cs <- read_excel("../contrast_sensitivity_analysis/data/contrast_experiment.xlsx",
-                 sheet = "ymazes", na = c("", "–"), .name_repair = "unique_quiet")
 
 decisions <- rbind(m1decisions, m2decisions)
 rm(m1decisions, m2decisions)
