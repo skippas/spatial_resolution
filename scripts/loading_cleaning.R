@@ -32,44 +32,6 @@ valid_returns <- decisions %>% filter(! is.na(t_ret))
 rm(list = c("valid_returns", "decision_no_nest", "decision_no_t_ret", "decisions_NA"))
 decisions <- decisions %>% filter(!is.na(first_decision), ! is.na(t_ret), ! is.na(nest)) 
 
-# recalculating pattern frequencies ####
-
-# first, simply add a column called viewing distance instead of position 
-decisions <- decisions %>%
-  mutate(view_dist = case_when(
-    position_ret == "1" ~ 50,
-    position_ret == "2" ~ 180,
-    # I'm assuming this distance for 2.5. I haven't found where i wrote this
-    # down yet. (Could also be approximated from films, not done yet).
-    position_ret == "2.5" ~ 250,
-    position_ret == "3" ~ 312,
-    TRUE ~ as.numeric(position_ret)  # Keep the original value if no match
-  ))
-# second, the pattern period (mm) is the cycle width recorded in the sheet
-decisions <- decisions %>% mutate(patt_period = as.numeric(cycle_width_ret))
-
-# then, make calculation for new column, patt_freq_ret
-calculate_cycles_per_degree <- function(patt_period, view_dist) {
-  theta <- 2 * atan(patt_period / (2 * view_dist))
-  theta_degrees <- theta * (180 / pi)
-  cycles_per_degree <- 1 / theta_degrees
-  cycles_per_degree <- round(cycles_per_degree, 3)
-  return(cycles_per_degree)
-}
-decisions <- decisions %>%
-  mutate(patt_freq_ret = calculate_cycles_per_degree(patt_period, view_dist))
-
-# adding a trial counter ####
-decisions <- decisions %>%
-  arrange(nest, date, session) %>%
-  group_by(nest, date, session) %>%
-  mutate(trial_number = cur_group_id())
-
-# make dataframe more readable ####
-decisions <- decisions %>% 
-  relocate(date, t_ret, session, .after = training_or_testing) %>%
-  relocate(trial_number, .after = nest) 
-
 # Excel clock times come in on a dummy 1899-12-31 date: keep the time of day,
 # put it on the real date, and label it local time (same tz as add_light_level)
 decisions$date  <- as_date(decisions$date)

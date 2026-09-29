@@ -1,0 +1,79 @@
+﻿ymaze;nest;bee_flight;video_name;date;t_video_start;elapse_t_dep;t_dep;pos_vpatt_dep;side_vpatt_dep;elapse_t_ret;t_ret;pos_vpatt_ret;side_vpatt_ret;light_level_ret;1st_decision;vpatt_freq_dep;vpatt_freq_ret;notes
+2;2.1;NA;C0010;2024-02-21;NA;NA;NA;NA;NA;NA;NA;NA;NA;NA;NA;0.1;;raining, didn’t capture flight. Deleted
+2;2.1;1;C0013;2024-02-22;18:02:04;00:29:10;18:31:14;1;L;00:58:48;19:00:52;1;R;;1;0.1;;
+2;2.1;1;C0011;2024-02-22;05:25:38;00:28:47;05:54:25;1;L;00:49:42;06:15:20;1;L;;1;0.1;;
+2;2.1;2;C0011;2024-02-22;05:25:38;00:43:25;06:09:03;1;L;01:02:03;06:27:41;1;L;;0;0.1;;
+2;2.1;3;C0011;2024-02-22;05:25:38;00:52:50;06:18:28;1;L;01:06:18;06:31:56;1;L;;1;0.1;;
+2;2.2;1;C0015;2024-02-23;18:04:26;00:37:55;18:42:21;1;R;00:45:11;18:49:37;1;R;;1;0.1;;
+2;2.2;1;C0014;2024-02-23;05:21:08;00:31:11;05:52:19;1;L;00:52:07;06:13:15;2;R;;1;0.1;;
+2;2.2;2;C0014;2024-02-23;05:21:08;00:38:56;06:00:04;1;L;01:06:31;06:27:39;2;R;;1;0.1;;
+2;2.2;3;C0014;2024-02-23;05:21:08;00:54:11;06:15:19;2;R;NA;NA;NA;NA;NA;NA;0.1;;3 departures and only 2 returns on camera
+2;2.1;1;C0011_2;2024-02-24;18:08:43;00:39:47;18:48:30;1;L;00:48:15;18:56:58;3;R;;0;0.1;;This bee never made it back into the nest. She tried the wrong hole repeatedly, then left into the night. Hopefully shes back tomorrow.
+2;2.1;2;C0011_2;2024-02-24;18:08:43;00:40:13;18:48:56;1;L;00:48:51;18:57:34;3;R;;0;0.1;;
+2;2.1;NA;NA;2024-02-24;NA;NA;NA;NA;NA;NA;NA;NA;NA;NA;NA;;;Saturday 24/02 morning was raining, didn’t do a trial. So perhaps another flight where the pattern was left in the left arm
+2;2.1;1;C0017;2024-02-25;18:10:06;00:32:55;18:43:01;1;R;00:45:48;18:55:54;2;L;;0;0.1;;borderline wrong decision
+2;2.1;RAIN;RAIN;2024-02-25;RAIN;RAIN;RAIN;RAIN;RAIN;RAIN;RAIN;RAIN;RAIN;RAIN;RAIN;0.1;;
+2;2.1;1;C0013_2;2024-02-26;05:29:45;NA;pre 5:30;1;L;00:34:16;06:04:01;3;R;;1;0.1;;Departure was very early, perhaps because of red lights at site. Or because previous days have been rainy and cloudy, so this morning was comparatively bright. Initial decision was correct, but from the video it didn’t seem as though the bee actually fixated the pattern. seems a fortuitous correct decision.
+2;2.1;2;C0013_2;2024-02-26;05:29:45;00:43:56;06:13:41;3;R;00:58:45;06:28:30;3;R;;0;0.1;;very strong wrong decision. Untrained individual? Or just low light? I wonder if when they get too close to the pattern they look for the hole instead of the pattern. Or perhaps when they arent looking direcctly ahead they might fixate the outline of the circle for example, or the wall of the arm, which is 'correct' and this urges them on forward. Perhaps adding optic flow would help them aim themselves forward? but then it would also provide them with distance info, which is problematic when moving pattern around (amount optic flow will be out of register with home position). Tough situation. Perhaps Erics method alleviaets this? But in that case, their homes' appearance is out of register with the optic flow patterns. So again there will be a lack of agreement between different cues. 
+2;2.1;3;C0013_2;2024-02-26;05:29:45;01:02:04;06:31:49;3;R;;;3;R;;0;0.1;;borderline wrong decision
+2;2.2;1;C0014_2;2024-02-26;18:10:26;00:28:18;18:38:44;1;R;00:42:47;18:53:13;1;L;;1;0.1;;
+2;2.3;1;C0016;2024-02-27;18:12:07;00:33:53;18:46:00;1;L;00:36:30;18:48:37;1;L;;1;0.1;;NEW NEST!!! Bee never managed to exit maze with the entrance on. 
+2;2.2;1;C0020;2024-02-27;05:20:44;00:35:08;05:55:52;1;L;01:00:21;06:21:05;2;R;;1;0.1;;
+2;2.2;2;C0020;2024-02-27;05:20:44;00:53:40;06:14:24;2;R;01:06:49;06:27:33;2;L;;0;0.1;;
+2;2.3;1;C0017_2;2024-02-28;05:38:42;00:19:36;05:58:18;1;L;00:30:18;06:09:00;1;L;;1*;0.1;;bee kept trying to enter but then came back out, as if the wrong nest was attached to the right pattern. The only explanation that makes sense to me (BESIDES MISALIGNED HOLE) is that the bee that exited was a dispersing male (didn’t do a very rigorous orientation flight) and then the bee returning was from the previous nest (2.1). Perhaps disoriented because of the insect trap that was on the previous night. 
+2;2.3;NA;C0018;2024-02-28;18:25:28;NA;NA;NA;NA;NA;NA;NA;NA;NA;NA;0.1;;no activity. Deleted video
+2;2.4;REST;REST;2024-02-29;REST;REST;REST;REST;REST;REST;REST;REST;REST;REST;REST;0.1;;
+2;2.5;1;C0019;2024-02-29;18:02:51;00:14:09;18:17:00;1;?;NA;NA;1;?;NA;NA;0.1;;NEW NEST!!! She didn’t do learning flight and abandoned the nest. Deleted video
+2;2.6;1;C0020_2;2024-03-01;00:47:34;00:54:11;NA;1;?;NA;NA;1;?;NA;NA;0.1;;NEW NEST!!! She didn’t make it back to the maze, I found her where she had exited nest on the previous night (on the spikes). I hope tonight she realizes she is somewhere new. Deleted video
+2;2.6;1;C0021;2024-03-01;17:57:12;00:38:48;18:36:00;1;R;00:52:47;18:49:59;1;R;0.01757;1;0.1;0.1;interesting approach, as if using the white brackets that join the maze boxes as landmarks
+2;2.6;1;C0033;2024-03-01;05:14:21;01:01:58;06:16:19;3;R;01:13:57;06:28:18;3;L;1.389;0;0.1;0.05;tough to tell time of entry with poor lighting angles
+2;2.6;1;C0027_2;2024-03-02;05:17:38;00:49:20;06:06:58;1;L;NA;NA;1;L;NA;NA;0.1;0.1;This bee did return, but only after I turned the camera off. Later than 06:30 am I think
+2;2.6;1;C0023;2024-03-02;17:58:11;00:37:53;18:36:04;3;R;NA;NA;NA;NA;NA;NA;0.1;NA;She didn’t make it out the maze
+2;2.6;1;C0025;2024-03-03;05:18:26;00:44:26;06:02:52;3;R;NA;NA;NA;NA;NA;NA ;0.1;NA;no return. she didn’t know how to get back into the maze. Cleary she was using the patterns at position 1 as a landark, because she flew right up to the triangle (entrance was off), but then flew off into the canopy. I saw this in real life but cant see her returning in the video however. 
+2;2.6;1;C0026;2024-03-03;18:03:34;NA;NA;NA;NA;NA;NA;NA;NA;NA;NA;NA;NA;
+2;2.6;1;C0027;2024-03-04;05:28:27;00:39:29;06:07:56;1;?;00:56:34;06:25:01;1;?;0.541;1;0.1;0.1;no activity. Deleted video
+2;2.6;1;C0028;2024-03-04;17:49:20;00:50:39;18:39:59;1;R;00:57:03;18:46:23;1;R;0.0578;1;0.1;0.1;Smooth exit
+2;2.6;1;C0029;2024-03-05;05:27:05;00:36:25;06:03:30;3;R;01:04:46;06:31:51;3;R;1.945;1;0.1;0.1;Struggled to get out for at least 15 minutes
+2;2.6;1;C0030;2024-03-05;18:10:31;00:22:31;18:33:02;3;L;00:32:21;18:42:52;3;L;0.1562;0;0.1;0.1;
+2;2.6;1;C0038;2024-03-06;05:30:38;00:37:04;06:07:42;3;L;00:46:30;06:17:08;3;R;0.1453;1;0.1;0.1;
+2;2.6;NA;C0032;2024-03-06;17:59:35;NA;NA;3;R;NA;NA;NA;NA;NA;NA;0.1;NA;no activity. Video deleted. Perhaps because stick was a bit crushed and it blocked her movement to hole. 
+2;2.6;1;C0035;2024-03-07;18:05:10;00:35:39;18:40:49;3;L;00:45:27;18:50:37;3;R;0.01793;1;0.1;0.1;
+2;2.6;1;C0037;2024-03-08;05:27:53;00:49:58;06:17:51;3;R;01:04:23;06:32:16;3;L;2.53;0;0.1;0.15;
+2;2.6;1;C0039;2024-03-08;18:03:36;00:22:07;18:25:43;3;L;00:43:03;18:46:39;3;?;;0;0.1;0.1;Strangely, she actually tries to enter wrong hole here! She wasn’t fixating the pattern when entering the wrong arm. It did look as though she looked down the maze towards the correct pattern but still flew sideways into the wrong arm. There was some slight interference from me here, but data should be fine still.
+2;2.6;1;C0042;2024-03-11;17:52:29;00:39:36;18:32:05;3;L;00:47:19;18:39:48;3;R;;0;0.1;0.1;Takes over a minute to enter hole. Goes down the wrong arm many times. Interesting. 
+2;2.6;1;C0041;2024-03-11;05:33:02;00:43:09;06:16:11;3;L;01:00:53;06:33:55;3;R;;0;0.1;0.05;Wrong decision, but again, very borderline given the low frequency and bright light. 
+2;2.6;1;C0046;2024-03-12;18:22:04;00:03:19;18:25:23;3;L;00:10:40;18:32:44;3;R;;0;0.1;0.05;
+2;2.6;1;C0044;2024-03-12;05:39:01;00:33:42;06:12:43;3;R;00:45:00;06:24:01;3;L;;1;0.1;0.15;
+2;2.6;1;C0048;2024-03-13;17:57:46;00:25:03;18:22:49;3;L;00:41:28;18:39:14;3;R;;0;0.05;0.05;
+2;2.6;1;C0054;2024-03-13;05:32:06;00:32:16;06:04:22;3;R;00:46:26;06:18:32;3;L;;1;0.05;0.05;
+2;2.6;1;C0050;2024-03-14;18:02:32;00:23:55;18:26:27;3;L;00:44:55;18:47:27;3;R;;0;0.05;0.05;Wrong decision, but she definitely saw it and turned around in the decision chamber, but then lost control, flying backwards into the wrong arm
+2;2.6;1;C0049;2024-03-14;05:25:52;00:45:59;06:11:51;3;R;00:58:39;06:24:31;3;L;;0;0.05;0.05;again, starts turning before the start of the wrong arm, but then drifts into the wrong arm, so technically a wrong decision but she surely saw it before she crossed the arm line
+2;2.6;1;C0051;2024-03-15;05:27:06;00:38:48;06:05:54;3;R;00:55:53;06:22:59;3;L;;1;0.05;0.05;
+2;2.6;1;C0053;2024-03-15;18:11:02;00:14:03;18:25:05;3;L;00:33:57;18:44:59;3;R;;0;0.05;0.05;Another borderline incorrect decision
+2;2.6;1;C0054;2024-03-16;05:54:17;00:08:05;06:02:22;3;R;00:25:54;06:20:11;3;L;;1;0.05;0.05;
+2;2.6;1;C0056;2024-03-16;18:02:13;cant find it on video ;NA;3;L;00:48:53;18:51:06;3;R;;0;0.05;0.05;borderline incorrect
+2;2.6;1;C0057;2024-03-17;05:36:19;00:24:36;06:00:55;3;R;00:39:38;06:15:57;2;L;;1;0.05;0.15;
+2;2.6;2;C0057;2024-03-17;05:36:19;00:41:01;06:17:20;2;L;00:46:52;06:23:11;2;L;;1;0.15;0.15;Completely missed this flight initially. Only noticed it when I was filling in light levels
+2;2.6;1;C0058.MP4_fixed-dyn;2024-03-17;17:55:00 according to the time stamp on original corrupted video. 17:55:24 (10 seconds before other camera) based on comparing beeps between videos;00:29:40;NA;3;L;00:37:10;18:32:54;3;L;;1;0.05;0.05;I had to find the time of the double beep on maze 1 video (00:37:20) to find the time of return
+2;2.6;2;C0058.MP4_fixed-dyn;2024-03-17;17:55:00 according to the time stamp on original corrupted video;unknown;NA;NA;NA;00:52:37;18:48:23;2;R;;0;NA;0.15;Two exits!? Two bees? I couldn’t find when the bee exited. Perhaps while I was changing patterns after her first return. Seems like bee may have left very ear. Bee returns 00:52:49 on other video
+2;2.6;NA;C0062;2024-03-18;18:14:52;NA;NA;3;R;NA;NA;3;R;NA;NA;0.05;0.05;no activity. Perhaps an early exit and return?
+2;2.6;1;C0061;2024-03-18;05:32:50;00:08:19;05:41:09;3;R;00:40:31;06:13:21;3;L;;1;0.05;0.05;I shined a red light on the nest to try to get the bee to come out early
+2;2.6;1;C0063;2024-03-19;05:22:06;00:41:25;06:03:31;3;R;01:06:18;06:28:24;3;L;;1;0.05;0.1;She came out a bit earlier today. Perhaps because I got her out early the previous morning. Or perhaps also because I shined my light a bit much when i checked on the hole this morning. Cant remember if I was trying to get her out early again. She exited through the side of the hole
+;;;;between Saturday the 09/03 and Monday 11/03 pattern was not changed. ;;;;;;;;;;;;;;
+2;2.1;1;C0014;;05:21:08;00:31:18;05:52:26;1;R;00:52:07;06:13:15;2;L;;1;0.1;;
+2;2.1;2;C0014;;05:21:08;00:54:11;06:15:19;2;L;01:06:33;06:27:41;2;L;;1;0.1;;
+2;2.1;NA;NA;;NA;NA;NA;NA;NA;NA;NA;NA;NA;NA;NA;;;This nest I didn’t write down the details, but I think it had two flights levaing and returning with the vertical pattern in the right arm and the first position when I first inserted it into maze. 
+2;2.1;1;C0064;2024-03-19;18:14:43;pre-video start;NA;3;L;00:15:47;;3;R;;0;0.05;0.1;
+2;2.1;2;C0064;2024-03-19;18:14:43;00:19:39;18:34:22;3;R;00:29:15;18:43:58;3;R;;0;0.1;0.1;How should I treat two decisions in a row where I havent changed pattern? In theory, the bee will have had a chance to learn some other low frequency feature on the second return. The reason I think of this is given the borderline incorrect decision under darker conditions here versus previous return - perhaps she learned some other feature on the previous return?
+;;;;2024-03-20;;;;;;;;;;;;;;Raining morning. No data
+;;;;2024-03-20;;;;;;;;;;;;;;Raining evening. No data
+2;2.1;1;C0066;;;;;;;01:06:32;;;;;1;;;technically correct, although she doesn’t go all the way down the track, which is strange and not what I was expecting to see. Was there some other low frequency cue she had become accustomed to while being on the other side? Or is this just variation?
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
