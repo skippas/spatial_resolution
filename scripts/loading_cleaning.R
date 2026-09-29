@@ -1,5 +1,4 @@
 library(tidyverse)
-library(lubridate)
 
 # reading maze data ####
 m2decisions <- readxl::read_xlsx("data/Spatial_resolution_experiment.xlsx",
@@ -13,10 +12,9 @@ rm(m1decisions, m2decisions)
 # modifying dataframe ####
 decisions <- decisions %>% 
   # Remove unnecessary variables
-  select(!c(vpatt_freq_dep, pos_vpatt_dep, t_dep,
-            elapse_t_dep, elapse_t_ret, notes, proxy_method, light_level_proxy,
-            light_level_issue, t_video_start, ymaze,
-            video_name, multiple_decisions, light_level_ret)) %>% 
+  select(!c(cycle_width_dep, position_dep, t_dep,
+            ELTD, ELTR, notes, t_video_start, ymaze,
+            video_name, multiple_decisions)) %>%
   mutate(
     # append a session variable to data
     session = ifelse(
@@ -36,37 +34,19 @@ decisions <- decisions %>% filter(!is.na(first_decision), ! is.na(t_ret), ! is.n
 
 # recalculating pattern frequencies ####
 
-# what I want is a column called pattern_frequency_return
-# and another column called pattern_frequency_pos3
-# vpatt_freq_ret must be renamed to patt_freq_ret_pos3
-# and patt_freq_ret must be calculated from position and vpatt_freq_ret columns
-
 # first, simply add a column called viewing distance instead of position 
 decisions <- decisions %>%
   mutate(view_dist = case_when(
-    pos_vpatt_ret == "1" ~ 50,
-    pos_vpatt_ret == "2" ~ 180,
-    # I'm assuming this distance for 2.5. I haven't found where i wrote this 
-    # down yet. (Could also be approximated from films, not done yet). 
-    pos_vpatt_ret == "2.5" ~ 250, 
-    pos_vpatt_ret == "3" ~ 312,
-    TRUE ~ as.numeric(pos_vpatt_ret)  # Keep the original value if no match
+    position_ret == "1" ~ 50,
+    position_ret == "2" ~ 180,
+    # I'm assuming this distance for 2.5. I haven't found where i wrote this
+    # down yet. (Could also be approximated from films, not done yet).
+    position_ret == "2.5" ~ 250,
+    position_ret == "3" ~ 312,
+    TRUE ~ as.numeric(position_ret)  # Keep the original value if no match
   ))
-#decisions <- decisions %>% rename(view_dist = pos_vpatt_ret)
-# second, add a column with pattern period instead of vpatt_freq_ret
-decisions$vpatt_freq_ret <- as.numeric(decisions$vpatt_freq_ret)
-decisions <- decisions %>%
-  mutate(
-    vpatt_freq_ret = case_when(
-      vpatt_freq_ret == 0.05 ~ 2.1707,
-      vpatt_freq_ret == 0.10 ~ 4.34139,
-      vpatt_freq_ret == 0.15 ~ 6.51209,
-      vpatt_freq_ret == 0.20 ~ 8.68279,
-      vpatt_freq_ret == 0.25 ~ 5*2.1707,
-      vpatt_freq_ret == 0.30 ~ 6*2.1707,
-      TRUE ~ vpatt_freq_ret)) %>%  # Keep the original value if no match
-  mutate(vpatt_freq_ret = 250 / vpatt_freq_ret)
-decisions <- decisions %>% rename(patt_period = vpatt_freq_ret)
+# second, the pattern period (mm) is the cycle width recorded in the sheet
+decisions <- decisions %>% mutate(patt_period = as.numeric(cycle_width_ret))
 
 # then, make calculation for new column, patt_freq_ret
 calculate_cycles_per_degree <- function(patt_period, view_dist) {
@@ -90,14 +70,7 @@ decisions <- decisions %>%
   relocate(date, t_ret, session, .after = training_or_testing) %>%
   relocate(trial_number, .after = nest) 
 
-# Extract the time part from 'incorrect_time' and combine it with 'correct_date'
-decisions$t_ret<- as_datetime(decisions$t_ret)
-decisions$date <- as_date(decisions$date)
-decisions$t_ret <- decisions$date + hms(format(decisions$t_ret, "%H:%M:%S"))
-# Add timezone
-decisions$t_ret <- force_tz(decisions$t_ret, tzone = "EST") # this format probably lost when writing to csv
-
-write.csv(decisions, "output/spatial_resolution_experiment_cleaned.csv", row.names = FALSE)
-
-
-
+# Excel clock times come in on a dummy 1899-12-31 date: keep the time of day,
+# put it on the real date, and label it local time (same tz as add_light_level)
+decisions$date  <- as_date(decisions$date)
+decisions$t_ret <- force_tz(as_datetime(decisions$date) + round(as.numeric(decisions$t_ret) %% 86400), "EST")
