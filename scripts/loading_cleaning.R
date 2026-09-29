@@ -1,5 +1,4 @@
 library(tidyverse)
-library(lubridate)
 
 # reading maze data ####
 m2decisions <- readxl::read_xlsx("data/Spatial_resolution_experiment.xlsx",
@@ -35,11 +34,6 @@ decisions <- decisions %>% filter(!is.na(first_decision), ! is.na(t_ret), ! is.n
 
 # recalculating pattern frequencies ####
 
-# what I want is a column called pattern_frequency_return
-# and another column called pattern_frequency_pos3
-# vpatt_freq_ret must be renamed to patt_freq_ret_pos3
-# and patt_freq_ret must be calculated from position and vpatt_freq_ret columns
-
 # first, simply add a column called viewing distance instead of position 
 decisions <- decisions %>%
   mutate(view_dist = case_when(
@@ -51,21 +45,8 @@ decisions <- decisions %>%
     position_ret == "3" ~ 312,
     TRUE ~ as.numeric(position_ret)  # Keep the original value if no match
   ))
-#decisions <- decisions %>% rename(view_dist = position_ret)
-# second, add a column with pattern period instead of vpatt_freq_ret
-decisions$vpatt_freq_ret <- as.numeric(decisions$vpatt_freq_ret)
-decisions <- decisions %>%
-  mutate(
-    vpatt_freq_ret = case_when(
-      vpatt_freq_ret == 0.05 ~ 2.1707,
-      vpatt_freq_ret == 0.10 ~ 4.34139,
-      vpatt_freq_ret == 0.15 ~ 6.51209,
-      vpatt_freq_ret == 0.20 ~ 8.68279,
-      vpatt_freq_ret == 0.25 ~ 5*2.1707,
-      vpatt_freq_ret == 0.30 ~ 6*2.1707,
-      TRUE ~ vpatt_freq_ret)) %>%  # Keep the original value if no match
-  mutate(vpatt_freq_ret = 250 / vpatt_freq_ret)
-decisions <- decisions %>% rename(patt_period = vpatt_freq_ret)
+# second, the pattern period (mm) is the cycle width recorded in the sheet
+decisions <- decisions %>% mutate(patt_period = as.numeric(cycle_width_ret))
 
 # then, make calculation for new column, patt_freq_ret
 calculate_cycles_per_degree <- function(patt_period, view_dist) {
@@ -93,8 +74,3 @@ decisions <- decisions %>%
 # put it on the real date, and label it local time (same tz as add_light_level)
 decisions$date  <- as_date(decisions$date)
 decisions$t_ret <- force_tz(as_datetime(decisions$date) + round(as.numeric(decisions$t_ret) %% 86400), "EST")
-
-write.csv(decisions, "output/spatial_resolution_experiment_cleaned.csv", row.names = FALSE)
-
-
-
