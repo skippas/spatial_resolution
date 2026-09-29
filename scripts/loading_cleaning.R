@@ -13,10 +13,9 @@ rm(m1decisions, m2decisions)
 # modifying dataframe ####
 decisions <- decisions %>% 
   # Remove unnecessary variables
-  select(!c(vpatt_freq_dep, pos_vpatt_dep, t_dep,
-            elapse_t_dep, elapse_t_ret, notes, proxy_method, light_level_proxy,
-            light_level_issue, t_video_start, ymaze,
-            video_name, multiple_decisions, light_level_ret)) %>% 
+  select(!c(cycle_width_dep, position_dep, t_dep,
+            ELTD, ELTR, notes, t_video_start, ymaze,
+            video_name, multiple_decisions)) %>%
   mutate(
     # append a session variable to data
     session = ifelse(
@@ -44,15 +43,15 @@ decisions <- decisions %>% filter(!is.na(first_decision), ! is.na(t_ret), ! is.n
 # first, simply add a column called viewing distance instead of position 
 decisions <- decisions %>%
   mutate(view_dist = case_when(
-    pos_vpatt_ret == "1" ~ 50,
-    pos_vpatt_ret == "2" ~ 180,
-    # I'm assuming this distance for 2.5. I haven't found where i wrote this 
-    # down yet. (Could also be approximated from films, not done yet). 
-    pos_vpatt_ret == "2.5" ~ 250, 
-    pos_vpatt_ret == "3" ~ 312,
-    TRUE ~ as.numeric(pos_vpatt_ret)  # Keep the original value if no match
+    position_ret == "1" ~ 50,
+    position_ret == "2" ~ 180,
+    # I'm assuming this distance for 2.5. I haven't found where i wrote this
+    # down yet. (Could also be approximated from films, not done yet).
+    position_ret == "2.5" ~ 250,
+    position_ret == "3" ~ 312,
+    TRUE ~ as.numeric(position_ret)  # Keep the original value if no match
   ))
-#decisions <- decisions %>% rename(view_dist = pos_vpatt_ret)
+#decisions <- decisions %>% rename(view_dist = position_ret)
 # second, add a column with pattern period instead of vpatt_freq_ret
 decisions$vpatt_freq_ret <- as.numeric(decisions$vpatt_freq_ret)
 decisions <- decisions %>%
