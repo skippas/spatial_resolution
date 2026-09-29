@@ -89,12 +89,10 @@ decisions <- decisions %>%
   relocate(date, t_ret, session, .after = training_or_testing) %>%
   relocate(trial_number, .after = nest) 
 
-# Extract the time part from 'incorrect_time' and combine it with 'correct_date'
-decisions$t_ret<- as_datetime(decisions$t_ret)
-decisions$date <- as_date(decisions$date)
-decisions$t_ret <- decisions$date + hms(format(decisions$t_ret, "%H:%M:%S"))
-# Add timezone
-decisions$t_ret <- force_tz(decisions$t_ret, tzone = "EST") # this format probably lost when writing to csv
+# Excel clock times come in on a dummy 1899-12-31 date: keep the time of day,
+# put it on the real date, and label it local time (same tz as add_light_level)
+decisions$date  <- as_date(decisions$date)
+decisions$t_ret <- force_tz(as_datetime(decisions$date) + round(as.numeric(decisions$t_ret) %% 86400), "EST")
 
 write.csv(decisions, "output/spatial_resolution_experiment_cleaned.csv", row.names = FALSE)
 
