@@ -13,7 +13,7 @@ rm(m1decisions, m2decisions)
 decisions <- decisions %>% 
   # Remove unnecessary variables
   select(!c(cycle_width_dep, position_dep, t_dep,
-            ELTD, ELTR, notes, t_video_start, ymaze,
+            ELTD, ELTR, notes, t_video_start,
             video_name, multiple_decisions)) %>%
   mutate(
     # append a session variable to data
@@ -36,3 +36,6 @@ decisions <- decisions %>% filter(!is.na(first_decision), ! is.na(t_ret), ! is.n
 # put it on the real date, and label it local time (same tz as add_light_level)
 decisions$date  <- as_date(decisions$date)
 decisions$t_ret <- force_tz(as_datetime(decisions$date) + round(as.numeric(decisions$t_ret) %% 86400), "EST")
+
+# append light level (same model as the contrast sensitivity data)
+decisions <- predictlight::add_light_level(decisions)

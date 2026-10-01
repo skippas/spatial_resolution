@@ -1,16 +1,19 @@
+library(tidyverse)
+source("functions/calculate_spatial_frequency.R")
 
 # re use the cleaning code already in the CS repo
 cs_dir <- "../contrast_sensitivity_analysis"
 source(file.path(cs_dir, "cleaning_ymaze_data.R"), chdir = TRUE)
 cs <- clean_ymazes(file.path(cs_dir, "data/contrast_experiment.xlsx"))
 
-# clean SR data 
+# clean SR data (leaves `decisions`)
 source("scripts/loading_cleaning.R")
+sr <- decisions
 
 drop_unused <- function(df, keep = character(), extra = character()) {
   baseline <- c(
     # spatial resolution model uses first decision, not landing:
-    "first_landing", 
+    "first_landing",
     # video / recording bookkeeping
     "video_name", "t_video_start", "notes",
     # departure (outbound) info - models use the return only
@@ -27,25 +30,33 @@ drop_unused <- function(df, keep = character(), extra = character()) {
   df %>% select(-any_of(setdiff(c(baseline, extra), keep)))
 }
 
+# spatial frequency of the return pattern, computed the same way for both ####
+sr <- add_spatial_frequency(sr)
+cs <- add_spatial_frequency(cs)
 
-# recalculating pattern frequencies ####
+# join ####
+# the columns the joint model needs; everything else is left behind, so a new
+# column in either sheet can't slip into the joint data unnoticed
+joint_cols <- c("ymaze", "nest", "flight", "date", "t_ret", "session",
+                "home_orient", "side_home_ret", "position_ret", "view_dist",
+                "cycle_width_ret", "patt_period", "patt_freq_ret",
+                "contrast_ret", "first_decision", "light_pred")
 
-# first, simply add a column called viewing distance instead of position 
-decisions <- decisions %>%
-  mutate(view_dist = case_when(
-    position_ret == "1" ~ 50,
-    position_ret == "2" ~ 180,
-    # I'm assuming this distance for 2.5. I haven't found where i wrote this
-    # down yet. (Could also be approximated from films, not done yet).
-    position_ret == "2.5" ~ 250,
-    position_ret == "3" ~ 312,
-    TRUE ~ as.numeric(position_ret)  # Keep the original value if no match
-  ))
-# second, the pattern period (mm) is the cycle width recorded in the sheet
-decisions <- decisions %>% mutate(patt_period = as.numeric(cycle_width_ret))
+standardise <- function(df, experiment) {
+  df %>%
+    select(all_of(joint_cols)) %>%
+    mutate(
+      # nest ids repeat across experiments (e.g. 1.2, 2.1), so prefix them
+      nest = if_else(is.na(nest), NA_character_,
+                     paste0(experiment, "_", sprintf("%.1f", as.numeric(nest)))),
+      side_home_ret = na_if(side_home_ret, "?")
+    )
+}
 
-# then, make calculation for new column, patt_freq_ret
-source("functions/calculate_spatial_frequency.R")
+joint <- bind_rows(sr = standardise(sr, "sr"),
+                   cs = standardise(cs, "cs"),
+                   .id = "experiment")
 
-decisions <- decisions %>%
-  mutate(patt_freq_ret = calculate_cycles_per_degree(patt_period, view_dist))
+# trials usable in the joint model: a decision, a spatial frequency and a light level
+joint_model <- joint %>%
+  filter(!is.na(first_decision), !is.na(patt_freq_ret), !is.na(light_pred))
