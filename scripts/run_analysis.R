@@ -45,12 +45,7 @@ decisions <- decisions %>%
 decisions <- decisions %>% mutate(patt_period = as.numeric(cycle_width_ret))
 
 # then, make calculation for new column, patt_freq_ret
-calculate_cycles_per_degree <- function(patt_period, view_dist) {
-  theta <- 2 * atan(patt_period / (2 * view_dist))
-  theta_degrees <- theta * (180 / pi)
-  cycles_per_degree <- 1 / theta_degrees
-  cycles_per_degree <- round(cycles_per_degree, 3)
-  return(cycles_per_degree)
-}
+source("functions/calculate_spatial_frequency.R")
+
 decisions <- decisions %>%
   mutate(patt_freq_ret = calculate_cycles_per_degree(patt_period, view_dist))
