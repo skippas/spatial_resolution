@@ -1,10 +1,6 @@
 # Joint model of the spatial resolution (SR) and contrast sensitivity (CS) y maze
 # data, using the predictors of the two separate models together:
-#   SR (analysis_stimuli_at_pos2.R):   first_decision ~ light_pred + patt_freq_ret
-#   CS (contrast_sensitivity_model.R): first_landing ~ log10(contrast) + light_pred
 # The outcome is first_decision, the only one recorded in both experiments.
-# Run via scripts/run_analysis.R, which provides `joint_model`.
-
 library(psyphy)
 
 # trial selection: each experiment contributes the trials its own model used ####
@@ -27,6 +23,7 @@ sr_trials <- joint_model %>%
          date > as.Date("2024-04-16"))
 
 # CS: all cleaned trials (as in contrast_sensitivity_model.R)
+# it might be cleaner to use and explain only the 90% contrasts from the 2025 data
 cs_trials <- joint_model %>% filter(experiment == "cs")
 
 model_data <- bind_rows(sr_trials, cs_trials) %>%
@@ -43,3 +40,38 @@ fit_2afc <- glm(first_decision ~ light_pred + patt_freq_ret + log10(contrast),
                 family = binomial(mafc.logit(2)), data = model_data,
                 start = c(0, 0, 0, 0))
 summary(fit_2afc)
+
+# make prediction dataframe with key light levels
+library(marginaleffects)
+light_mean_sd <- mean(model_data$light_pred) + sd(model_data$light_pred)*c(-2,-1,0,1,2)
+light_range <- seq(min(model_data$light_pred), max(model_data$light_pred), length.out = 100)
+spFreq_range <- seq(min(model_data$patt_freq_ret), max(model_data$patt_freq_ret), length.out = 100)
+newdata <- datagrid(
+  model = fit_2afc, contrast = 0.9, patt_freq_ret  = spFreq_range,
+  light_values = c(light_mean_sd, light_range))      
+# predictions(fit, newdata = newdata)        
+
+# inverse prediction / calibration
+inv_prediction <- function(betas, eta, light_values, contrast) {
+  (eta - betas["(Intercept)"] - betas["light_pred"] * light_values -
+     betas["log10(contrast)"] * log10(contrast)) / betas["patt_freq_ret"]
+}
+
+p_thresh <- 0.7
+eta_thresh <- qlogis((p_thresh - 0.5)/0.5)
+betas <- coef(fit_2afc)
+C <- 0.9 
+v_cutoff <- inv_prediction(
+  betas = betas, eta = eta_thresh, contrast = C,
+  light_values = unique(newdata$light_values))
+
+# generate confidence intervals for inverse prediction
+beta_samples <- MASS::mvrnorm(50000, coef(fit_2afc), vcov(fit_2afc))
+v_cutoff_samples <- apply(
+  beta_samples, 1, function(bs)
+    inv_prediction(bs, eta_thresh_psyphy, unique(newdata$light_pred), C))
+# combine the light range, vcutoff for the light range, and the 95% CI of vcutoff
+pred <- tibble(light_pred = unique(newdata$light_pred),
+               v_cutoff = v_cutoff,
+               lwr = apply(v_cutoff_samples, 1, quantile, 0.025),
+               upr = apply(v_cutoff_samples, 1, quantile, 0.975))

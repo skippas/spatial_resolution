@@ -1,15 +1,7 @@
-# Loads and cleans the y maze data of both experiments. Sourcing this file
-# leaves two data frames behind, ready to be joined: `sr` (spatial resolution)
-# and `cs` (contrast sensitivity). Run from the project root.
+# Loads and cleans the y maze data from spatial resolution (2024) experiment
 
 library(tidyverse)
 source("functions/calculate_spatial_frequency.R")
-
-# contrast sensitivity data ####
-# re use the cleaning code already in the CS repo
-cs_dir <- "../contrast_sensitivity_analysis"
-source(file.path(cs_dir, "cleaning_ymaze_data.R"), chdir = TRUE)
-cs <- clean_ymazes(file.path(cs_dir, "data/contrast_experiment.xlsx"))
 
 # spatial resolution data ####
 # reading maze data ####
@@ -57,4 +49,3 @@ rm(decisions)
 
 # spatial frequency of the return pattern, computed the same way for both ####
 sr <- add_spatial_frequency(sr)
-cs <- add_spatial_frequency(cs)
