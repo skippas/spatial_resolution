@@ -26,17 +26,16 @@ sr_trials <- joint_model %>%
 # it might be cleaner to use and explain only the 90% contrasts from the 2025 data
 cs_trials <- joint_model %>% filter(experiment == "cs")
 
-model_data <- bind_rows(sr_trials, cs_trials) %>%
-  mutate(contrast = contrast_ret / 100)  # proportion, as in the CS model
+model_data <- bind_rows(sr_trials, cs_trials)
 
 # models ####
 # logit link, as in the SR model
-fit_logit <- glm(first_decision ~ light_pred + patt_freq_ret + log10(contrast),
+fit_logit <- glm(first_decision ~ light_pred + patt_freq_ret + log10(contrast_ret),
                  family = binomial, data = model_data)
 summary(fit_logit)
 
 # two-alternative link with a 50 % guessing floor, as in the CS model
-fit_2afc <- glm(first_decision ~ light_pred + patt_freq_ret + log10(contrast),
+fit_2afc <- glm(first_decision ~ light_pred + patt_freq_ret + log10(contrast_ret),
                 family = binomial(mafc.logit(2)), data = model_data,
                 start = c(0, 0, 0, 0))
 summary(fit_2afc)
@@ -47,14 +46,14 @@ light_mean_sd <- mean(model_data$light_pred) + sd(model_data$light_pred)*c(-2,-1
 light_range <- seq(min(model_data$light_pred), max(model_data$light_pred), length.out = 100)
 spFreq_range <- seq(min(model_data$patt_freq_ret), max(model_data$patt_freq_ret), length.out = 100)
 newdata <- datagrid(
-  model = fit_2afc, contrast = 0.9, patt_freq_ret  = spFreq_range,
+  model = fit_2afc, contrast_ret = 0.9, patt_freq_ret  = spFreq_range,
   light_values = c(light_mean_sd, light_range))      
 # predictions(fit, newdata = newdata)        
 
 # inverse prediction / calibration
 inv_prediction <- function(betas, eta, light_values, contrast) {
   (eta - betas["(Intercept)"] - betas["light_pred"] * light_values -
-     betas["log10(contrast)"] * log10(contrast)) / betas["patt_freq_ret"]
+     betas["log10(contrast_ret)"] * log10(contrast)) / betas["patt_freq_ret"]
 }
 
 p_thresh <- 0.7

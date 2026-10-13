@@ -25,7 +25,9 @@ decisions <- decisions %>%
       format(decisions$t_ret, "%H") >= 12, "pm", "am"), 
     # format t_ret so that it has correct date but NAs also remain NA
     # why is it NB that NAs remain NA?
-    date = ymd(date))
+    date = ymd(date),
+    # contrast as a proportion, the unit clean_ymazes() gives the CS data
+    contrast_ret = contrast_ret / 100)
 
 # filtering all rows that dont have a return decision, a return time, or a nest name ####
 # check vars below to make sure we aren't losing any data unnecessarily

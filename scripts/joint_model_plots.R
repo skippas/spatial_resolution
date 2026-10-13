@@ -8,7 +8,7 @@ C <- 0.9           # predictions are at 90 % contrast
 # trials from both experiments at 90 % contrast: all SR trials and the CS
 # trials that match the contrast the curves are drawn at
 plot_data <- model_data %>%
-  filter(contrast_ret == 90) 
+  filter(near(contrast_ret, C))
 experiment_shapes <- c("Spatial resolution" = 21, "Contrast sensitivity" = 22)
 freq_breaks <- seq(0.02, 0.16, 0.02)  # tested frequencies too close to label each
 
@@ -19,7 +19,7 @@ light_lvls <- c(seq(min(plot_data$light_pred), max(plot_data$light_pred), by = 1
 # frequency at which predicted performance equals p, given light and contrast
 inv_prediction <- function(betas, eta, light_grid, contrast) {
   unname((eta - betas["(Intercept)"] - betas["light_pred"] * light_grid -
-            betas["log10(contrast)"] * log10(contrast)) / betas["patt_freq_ret"])
+            betas["log10(contrast_ret)"] * log10(contrast)) / betas["patt_freq_ret"])
 }
 
 # cutoff frequency across light, with a 95 % interval from simulated coefficients
@@ -65,7 +65,7 @@ plot_curves <- function(fit, p = p_thresh) {
   as_lvl <- function(x) factor(round(x, 1), levels = lvl_labels)
 
   curves <- expand_grid(light_pred = light_lvls, patt_freq_ret = freq_grid) %>%
-    mutate(contrast = C,
+    mutate(contrast_ret = C,
            probability = predict(fit, newdata = pick(everything()),
                                  type = "response"),
            light_lvl = as_lvl(light_pred)) %>%
@@ -110,7 +110,7 @@ plot_mean_light <- function(fit, p = p_thresh) {
 
   # 95 % band on the link scale, back-transformed so it respects the 0.5 floor
   newdata <- tibble(light_pred = mean_light, patt_freq_ret = freq_grid,
-                    contrast = C)
+                    contrast_ret = C)
   pred <- predict(fit, newdata = newdata, type = "link", se.fit = TRUE)
   curve <- newdata %>%
     mutate(probability = fit$family$linkinv(pred$fit),
