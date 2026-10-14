@@ -1,26 +1,55 @@
 # Figures for the joint model, after the two logistic-regression figures at the
 # end of analysis_stimuli_at_pos2.R. Needs fit_logit / fit_2afc and model_data
 # from joint_model.R.
-
-p_thresh <- 0.7   # performance that defines the cutoff frequency
-C <- 0.9           # predictions are at 90 % contrast
+library(scico)
 
 # trials from both experiments at 90 % contrast: all SR trials and the CS
 # trials that match the contrast the curves are drawn at
-plot_data <- model_data %>%
-  filter(near(contrast_ret, C))
-experiment_shapes <- c("Spatial resolution" = 21, "Contrast sensitivity" = 22)
-freq_breaks <- seq(0.02, 0.16, 0.02)  # tested frequencies too close to label each
+observed <- model_data %>% filter(contrast_ret == 0.9)
+# create observed proportion points
+observed <- plot_data %>%
+  group_by(experiment, patt_freq_ret) %>%
+  summarise(prop_correct = mean(first_decision), n = n(), .groups = "drop")
+
+newdata <- broom::augment(
+  fit_2afc, newdata = newdata, type.predict = "link", se_fit = T) %>%
+  mutate(p = fit_2afc$family$linkinv(.fitted),
+         lwr =  fit_2afc$family$linkinv(.fitted - 1.96*.se.fit),
+         upr = fit_2afc$family$linkinv(.fitted + 1.96*.se.fit)
+
+# model plot - this needs to be adapted - taken from cs code
+experiment_shapes <- c("sr" = 21, "cs" = 22)
+freq_breaks <- seq(0.02, 0.16, 0.02)
+newdata_light_sd <- filter(newdata, type_light_value != "range")
+p <- ggplot() +
+  geom_line(data = filter(newdata, type_light_value != "range"),
+            aes(
+              x = patt_freq_ret, y = p, colour = light_pred, group = light_pred)) +
+  geom_point(data = observed,
+             aes(
+               x = patt_freq_ret, y = p, size = n, shape = experiment)) +
+  scale_x_continuous(breaks = freq_breaks) +
+  scale_shape_manual(values = experiment_shapes) +
+  labs(x = "Pattern frequency (cycles per degree)",
+       y = "Proportion of choices for nest",
+       shape = "Experiment",
+       colour = expression(atop("Returning light level",
+                                ~ "(" ~ log[10] ~ "lux" ~ ")"))) +
+  scale_colour_scico(
+    palette = "bamako",
+    name   =  expression(atop("Illuminance", "(" * log[10] ~ "lx)")),
+    breaks = light_breaks,
+    labels = scales::label_number(accuracy = 0.1),
+    guide  = guide_legend(reverse = TRUE,
+                          theme = theme(legend.key.spacing.y = unit(-8, "pt")))) +
+  scale_size(name = expression(italic(n)[choices])) +   # keeps default spacing
+  theme_bw(base_size = 8) +
+  theme() 
+
 
 # light levels: 1 log unit steps across the plotted data plus the mean, as before
 light_lvls <- c(seq(min(plot_data$light_pred), max(plot_data$light_pred), by = 1),
                 mean(plot_data$light_pred))
-
-# frequency at which predicted performance equals p, given light and contrast
-inv_prediction <- function(betas, eta, light_grid, contrast) {
-  unname((eta - betas["(Intercept)"] - betas["light_pred"] * light_grid -
-            betas["log10(contrast_ret)"] * log10(contrast)) / betas["patt_freq_ret"])
-}
 
 # cutoff frequency across light, with a 95 % interval from simulated coefficients
 cutoff_curve <- function(fit, p = p_thresh, contrast = C, n_sim = 5000) {
