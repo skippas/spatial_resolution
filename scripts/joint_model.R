@@ -7,14 +7,7 @@ source("functions/joint_model_functions.R")
 # trial selection: each experiment contributes the trials its own model used ####
 # SR nests with enough testing. The V / H suffixes of the nest names used in
 # analysis_stimuli_at_pos2.R now live in home_orient.
-sr_nests <- tribble(
-  ~nest,    ~home_orient,
-  "sr_1.4", "vertical",
-  "sr_1.5", "horizontal",
-  "sr_2.6", "vertical",
-  "sr_2.8", "vertical",
-  "sr_2.9", "horizontal"
-)
+
 # it might be cleaner to use and explain only the 90% contrasts from the 2025 CS data
 model_data <- select_model_trials(joint_model, sr_nests)
 

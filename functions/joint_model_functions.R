@@ -7,7 +7,17 @@
 # SR: the nests in sr_nests (nest + home_orient), no training trials, pattern at
 # position 2, after the learning period (as in analysis_stimuli_at_pos2.R).
 # CS: all cleaned trials (as in contrast_sensitivity_model.R).
-select_model_trials <- function(joint_model, sr_nests) {
+select_model_trials <- function(joint_model) {
+  
+  sr_nests <- tribble(
+    ~nest,    ~home_orient,
+    "sr_1.4", "vertical",
+    "sr_1.5", "horizontal",
+    "sr_2.6", "vertical",
+    "sr_2.8", "vertical",
+    "sr_2.9", "horizontal"
+  )
+  
   sr_trials <- joint_model %>%
     filter(experiment == "sr") %>%
     semi_join(sr_nests, by = c("nest", "home_orient")) %>%
