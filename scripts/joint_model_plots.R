@@ -1,79 +1,56 @@
 # Figures for the joint model, after the two logistic-regression figures at the
-# end of analysis_stimuli_at_pos2.R. Needs fit_logit / fit_2afc and model_data
-# from joint_model.R.
+# end of analysis_stimuli_at_pos2.R. Needs fit_2afc, model_data, pred_curves,
+# light_sd, p_thresh and C from joint_model.R, and the helpers in
+# functions/joint_model_functions.R.
 library(scico)
 
 # trials from both experiments at 90 % contrast: all SR trials and the CS
 # trials that match the contrast the curves are drawn at
-observed <- model_data %>% filter(contrast_ret == 0.9)
-# create observed proportion points
-observed <- plot_data %>%
-  group_by(experiment, patt_freq_ret) %>%
-  summarise(prop_correct = mean(first_decision), n = n(), .groups = "drop")
+plot_data <- model_data %>% filter(near(contrast_ret, C))
 
-newdata <- broom::augment(
-  fit_2afc, newdata = newdata, type.predict = "link", se_fit = T) %>%
-  mutate(p = fit_2afc$family$linkinv(.fitted),
-         lwr =  fit_2afc$family$linkinv(.fitted - 1.96*.se.fit),
-         upr = fit_2afc$family$linkinv(.fitted + 1.96*.se.fit)
-
-# model plot - this needs to be adapted - taken from cs code
 experiment_shapes <- c("sr" = 21, "cs" = 22)
-freq_breaks <- seq(0.02, 0.16, 0.02)
-newdata_light_sd <- filter(newdata, type_light_value != "range")
-p <- ggplot() +
-  geom_line(data = filter(newdata, type_light_value != "range"),
-            aes(
-              x = patt_freq_ret, y = p, colour = light_pred, group = light_pred)) +
-  geom_point(data = observed,
-             aes(
-               x = patt_freq_ret, y = p, size = n, shape = experiment)) +
-  scale_x_continuous(breaks = freq_breaks) +
-  scale_shape_manual(values = experiment_shapes) +
-  labs(x = "Pattern frequency (cycles per degree)",
-       y = "Proportion of choices for nest",
-       shape = "Experiment",
-       colour = expression(atop("Returning light level",
-                                ~ "(" ~ log[10] ~ "lux" ~ ")"))) +
-  scale_colour_scico(
-    palette = "bamako",
-    name   =  expression(atop("Illuminance", "(" * log[10] ~ "lx)")),
-    breaks = light_breaks,
-    labels = scales::label_number(accuracy = 0.1),
-    guide  = guide_legend(reverse = TRUE,
-                          theme = theme(legend.key.spacing.y = unit(-8, "pt")))) +
-  scale_size(name = expression(italic(n)[choices])) +   # keeps default spacing
-  theme_bw(base_size = 8) +
-  theme() 
+freq_breaks <- seq(0.02, 0.16, 0.02)  # tested frequencies too close to label each
 
-
-# light levels: 1 log unit steps across the plotted data plus the mean, as before
-light_lvls <- c(seq(min(plot_data$light_pred), max(plot_data$light_pred), by = 1),
-                mean(plot_data$light_pred))
-
-# cutoff frequency across light, with a 95 % interval from simulated coefficients
-cutoff_curve <- function(fit, p = p_thresh, contrast = C, n_sim = 5000) {
-  eta <- fit$family$linkfun(p)
-  light_grid <- seq(min(light_lvls), max(light_lvls), length.out = 100)
-  sims <- MASS::mvrnorm(n_sim, coef(fit), vcov(fit)) %>%
-    apply(1, function(b) inv_prediction(b, eta, light_grid, contrast))
-  tibble(light_pred = light_grid,
-         cutoff = inv_prediction(coef(fit), eta, light_grid, contrast),
-         lwr = apply(sims, 1, quantile, 0.025),
-         upr = apply(sims, 1, quantile, 0.975))
-}
+# light levels: 1 log unit steps across the plotted data plus the mean
+light_lvls <- light_levels(plot_data, "log_steps")
 
 # frequency grid spanning the tested frequencies
 freq_grid <- seq(floor(min(plot_data$patt_freq_ret) * 1000) / 1000,
                  ceiling(max(plot_data$patt_freq_ret) * 1000) / 1000,
                  by = 0.0005)
 
+# fig 0: curves at the mean and +- 1, 2 sd light levels, observed proportions ####
+# model plot - this needs to be adapted - taken from cs code
+plot_sd_curves <- function(curves, data) {
+  ggplot() +
+    geom_line(data = curves,
+              aes(x = patt_freq_ret, y = p, colour = light_pred,
+                  group = light_pred)) +
+    geom_point(data = observed_props(data),
+               aes(x = patt_freq_ret, y = prop_correct, size = n,
+                   shape = experiment)) +
+    scale_x_continuous(breaks = freq_breaks) +
+    scale_shape_manual(values = experiment_shapes) +
+    labs(x = "Pattern frequency (cycles per degree)",
+         y = "Proportion of choices for nest",
+         shape = "Experiment") +
+    scale_colour_scico(
+      palette = "bamako",
+      name   =  expression(atop("Illuminance", "(" * log[10] ~ "lx)")),
+      breaks = unique(curves$light_pred),
+      labels = scales::label_number(accuracy = 0.1),
+      guide  = guide_legend(reverse = TRUE,
+                            theme = theme(legend.key.spacing.y = unit(-8, "pt")))) +
+    scale_size(name = expression(italic(n)[choices])) +   # keeps default spacing
+    theme_bw(base_size = 8)
+}
+
 # fig 1: max detectable frequency as a function of light level ####
-plot_cutoff <- function(fit, p = p_thresh) {
-  curve <- cutoff_curve(fit, p)
-  pts <- tibble(light_pred = sort(light_lvls[-length(light_lvls)]),
-                cutoff = inv_prediction(coef(fit), fit$family$linkfun(p),
-                                        light_pred, C))
+plot_cutoff <- function(fit, light, p, contrast) {
+  curve <- cutoff_table(fit, seq(min(light), max(light), length.out = 100),
+                        p, contrast, n_sim = 5000)
+  pts <- tibble(light_pred = sort(light[-length(light)]),
+                cutoff = cutoff_freq(fit, light_pred, p, contrast))
   ggplot(curve, aes(light_pred, cutoff, colour = light_pred)) +
     geom_ribbon(aes(ymin = lwr, ymax = upr), colour = NA, fill = "white",
                 alpha = 0.2) +
@@ -89,36 +66,27 @@ plot_cutoff <- function(fit, p = p_thresh) {
 }
 
 # fig 2: choice probability against frequency, cutoffs drawn in ####
-plot_curves <- function(fit, p = p_thresh) {
-  lvl_labels <- sort(round(light_lvls, 1), decreasing = TRUE)
-  as_lvl <- function(x) factor(round(x, 1), levels = lvl_labels)
-
-  curves <- expand_grid(light_pred = light_lvls, patt_freq_ret = freq_grid) %>%
-    mutate(contrast_ret = C,
-           probability = predict(fit, newdata = pick(everything()),
-                                 type = "response"),
-           light_lvl = as_lvl(light_pred)) %>%
-    filter(probability > p)
-  vlines <- tibble(light_pred = light_lvls,
-                   patt_freq_ret = inv_prediction(coef(fit),
-                                                  fit$family$linkfun(p),
-                                                  light_lvls, C),
-                   light_lvl = as_lvl(light_pred))
-  colours <- setNames(viridisLite::viridis(length(lvl_labels), direction = -1),
-                      lvl_labels)
+plot_curves <- function(fit, data, light, p, contrast) {
+  curves <- prediction_grid(light, freq_grid, contrast) %>%
+    predict_band(fit, .) %>%
+    mutate(light_lvl = light_factor(light_pred, light)) %>%
+    filter(p > .env$p)
+  vlines <- tibble(light_pred = light,
+                   cutoff = cutoff_freq(fit, light, p, contrast),
+                   light_lvl = light_factor(light_pred, light))
 
   set.seed(8)
-  ggplot(plot_data, aes(patt_freq_ret, first_decision)) +
+  ggplot(data, aes(patt_freq_ret, first_decision)) +
     geom_jitter(aes(shape = experiment), height = 0.04, width = 0.003,
                 alpha = 0.5, colour = "black") +
-    geom_line(data = curves, aes(y = probability, colour = light_lvl),
+    geom_line(data = curves, aes(y = p, colour = light_lvl),
               linewidth = 0.8) +
     geom_hline(yintercept = p, lty = 2) +
-    geom_segment(data = vlines, aes(x = patt_freq_ret, xend = patt_freq_ret,
+    geom_segment(data = vlines, aes(x = cutoff, xend = cutoff,
                                     y = 0, yend = p, colour = light_lvl),
                  linetype = "dashed", linewidth = 0.8) +
     scale_x_continuous(breaks = freq_breaks) +
-    scale_colour_manual(values = colours) +
+    scale_colour_manual(values = light_colours(light)) +
     scale_shape_manual(values = experiment_shapes) +
     labs(x = "Pattern frequency (cycles per degree)",
          y = "Proportion of choices for home",
@@ -126,45 +94,30 @@ plot_curves <- function(fit, p = p_thresh) {
          colour = expression(atop("Returning light level",
                                   ~ "(" ~ log[10] ~ "lux" ~ ")"))) +
     theme_bw() +
-    theme(
-          legend.justification = c("right", "top"))
+    theme(legend.justification = c("right", "top"))
 }
 
 # fig 3: choice probability against frequency at the mean light level ####
 # one point per tested frequency and experiment (observed proportion, sized by
 # n choices) under the model curve. The points pool trials across light levels;
 # the curve is at the mean.
-plot_mean_light <- function(fit, p = p_thresh) {
-  mean_light <- mean(plot_data$light_pred)
-
-  # 95 % band on the link scale, back-transformed so it respects the 0.5 floor
-  newdata <- tibble(light_pred = mean_light, patt_freq_ret = freq_grid,
-                    contrast_ret = C)
-  pred <- predict(fit, newdata = newdata, type = "link", se.fit = TRUE)
-  curve <- newdata %>%
-    mutate(probability = fit$family$linkinv(pred$fit),
-           lower = fit$family$linkinv(pred$fit - 1.96 * pred$se.fit),
-           upper = fit$family$linkinv(pred$fit + 1.96 * pred$se.fit))
-
-  observed <- plot_data %>%
-    group_by(experiment, patt_freq_ret) %>%
-    summarise(prop_correct = mean(first_decision), n = n(), .groups = "drop")
-
-  cutoff <- inv_prediction(coef(fit), fit$family$linkfun(p), mean_light, C)
+plot_mean_light <- function(fit, data, light, p, contrast) {
+  mean_light <- mean(data$light_pred)
+  curve <- prediction_grid(mean_light, freq_grid, contrast) %>%
+    predict_band(fit, .)
+  cutoff <- cutoff_freq(fit, mean_light, p, contrast)
 
   # same colour the mean level gets in fig 2
-  lvl_labels <- sort(round(light_lvls, 1), decreasing = TRUE)
-  colour <- viridisLite::viridis(length(lvl_labels), direction = -1)[
-    match(round(mean_light, 1), lvl_labels)]
+  colour <- light_colours(light)[[as.character(round(mean_light, 1))]]
 
-  ggplot(curve, aes(patt_freq_ret, probability)) +
-    geom_ribbon(aes(ymin = lower, ymax = upper), fill = colour, alpha = 0.2) +
+  ggplot(curve, aes(patt_freq_ret, p)) +
+    geom_ribbon(aes(ymin = lwr, ymax = upr), fill = colour, alpha = 0.2) +
     geom_line(colour = colour, linewidth = 0.8) +
     geom_hline(yintercept = p, lty = 2) +
     annotate("segment", x = cutoff, xend = cutoff, y = 0, yend = p,
              colour = colour, linetype = "dashed", linewidth = 0.8) +
     # dodge so the two experiments don't overlap at shared frequencies
-    geom_point(data = observed,
+    geom_point(data = observed_props(data),
                aes(y = prop_correct, size = n, shape = experiment),
                position = position_dodge(width = 0.004),
                fill = "white", colour = "black") +
@@ -185,6 +138,7 @@ plot_mean_light <- function(fit, p = p_thresh) {
           plot.title = element_text(hjust = 0.5))
 }
 
-plot_cutoff(fit_2afc)
-plot_curves(fit_2afc)
-plot_mean_light(fit_2afc)
+plot_sd_curves(pred_curves, plot_data)
+plot_cutoff(fit_2afc, light_lvls, p = p_thresh, contrast = C)
+plot_curves(fit_2afc, plot_data, light_lvls, p = p_thresh, contrast = C)
+plot_mean_light(fit_2afc, plot_data, light_lvls, p = p_thresh, contrast = C)
