@@ -13,9 +13,8 @@ standardise <- function(df, experiment) {
     rename(any_of(c(training_or_testing = "training_or_test"))) %>%
     select(all_of(joint_cols)) %>%
     mutate(
-      # nest ids repeat across experiments (e.g. 1.2, 2.1), so prefix them
-      nest = if_else(is.na(nest), NA_character_,
-                     paste0(experiment, "_", sprintf("%.1f", as.numeric(nest)))),
+      # nest ids (nest.maze.yy) are unique across both experiments
+      nest = as.character(nest),
       side_home_ret = na_if(side_home_ret, "?")
     )
 }

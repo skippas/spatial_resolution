@@ -5,11 +5,9 @@ library(psyphy)
 source("functions/joint_model_functions.R")
 
 # trial selection: each experiment contributes the trials its own model used ####
-# SR nests with enough testing. The V / H suffixes of the nest names used in
-# analysis_stimuli_at_pos2.R now live in home_orient.
-
+# (nests and filters in select_model_trials())
 # it might be cleaner to use and explain only the 90% contrasts from the 2025 CS data
-model_data <- select_model_trials(joint_model, sr_nests)
+model_data <- select_model_trials(joint_model)
 
 # models ####
 # logit link, as in the SR model

@@ -4,24 +4,16 @@
 
 # trial selection ####
 # Each experiment contributes the trials its own model used.
-# SR: the nests in sr_nests (nest + home_orient), no training trials, pattern at
-# position 2, after the learning period (as in analysis_stimuli_at_pos2.R).
+# SR: nests with enough testing, no training trials, pattern at position 2,
+# after the learning period (as in analysis_stimuli_at_pos2.R, where these nests
+# were 1.4V, 1.5H, 2.6V, 2.8V and 2.9H).
 # CS: all cleaned trials (as in contrast_sensitivity_model.R).
 select_model_trials <- function(joint_model) {
-  
-  sr_nests <- tribble(
-    ~nest,    ~home_orient,
-    "sr_1.4", "vertical",
-    "sr_1.5", "horizontal",
-    "sr_2.6", "vertical",
-    "sr_2.8", "vertical",
-    "sr_2.9", "horizontal"
-  )
-  
+  sr_nests <- c("4.1.24", "5.1.24", "6.2.24", "9.2.24", "11.2.24")
   sr_trials <- joint_model %>%
-    filter(experiment == "sr") %>%
-    semi_join(sr_nests, by = c("nest", "home_orient")) %>%
-    filter(training_or_testing != "training" | is.na(training_or_testing),
+    filter(experiment == "sr",
+           nest %in% sr_nests,
+           training_or_testing != "training" | is.na(training_or_testing),
            position_ret == 2,
            date > as.Date("2024-04-16"))
   cs_trials <- joint_model %>% filter(experiment == "cs")
