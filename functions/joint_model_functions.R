@@ -78,9 +78,10 @@ cutoff_table <- function(fit, light, p, contrast, n_sim = 10000,
 
 # observed data ####
 # proportion of first decisions for home per experiment and tested frequency
+# (year kept for the shape legend; each experiment ran in one year)
 observed_props <- function(data) {
   data %>%
-    group_by(experiment, patt_freq_ret) %>%
+    group_by(experiment, year, patt_freq_ret) %>%
     summarise(prop_correct = mean(first_decision), n = n(), .groups = "drop")
 }
 

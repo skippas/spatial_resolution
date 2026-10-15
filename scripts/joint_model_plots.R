@@ -7,9 +7,11 @@ source("../theme_paper.R")
 
 # trials from both experiments at 90 % contrast: all SR trials and the CS
 # trials that match the contrast the curves are drawn at
-plot_data <- model_data %>% filter(contrast_ret == 0.9)
+# year of testing for the shape legend (SR 2024, CS 2025)
+plot_data <- model_data %>%
+  filter(contrast_ret == 0.9) %>%
+  mutate(year = factor(lubridate::year(date)))
 
-experiment_shapes <- c("sr" = 21, "cs" = 22)
 freq_breaks <- seq(0.02, 0.16, 0.02)  # tested frequencies too close to label each
 
 # light levels: 1 log unit steps across the plotted data plus the mean
@@ -26,7 +28,6 @@ freq_grid <- seq(floor(min(plot_data$patt_freq_ret) * 1000) / 1000,
 # 4. save these (acuity as function light level, perf as function light level) and histogram figures to resolution directory
 # add the schematic in.
 # add the model tables to stats script and figure out how best to feed it to latex.
-# 2. change the shape guide to be year, not experiment
 # 1. use patchwork to collect the legend of CS curve and SR curves
 
 plot_sd_curves <- function(curves, data) {
@@ -36,12 +37,11 @@ plot_sd_curves <- function(curves, data) {
                   group = light_pred)) +
     geom_point(data = observed_props(data),
                aes(x = patt_freq_ret, y = prop_correct, size = n,
-                   shape = experiment)) +
+                   shape = year)) +
     scale_x_continuous(breaks = freq_breaks) +
-    scale_shape_manual(values = experiment_shapes) +
+    scale_shape_year() +
     labs(x = "Pattern frequency (cycles per degree)",
-         y = "Proportion of choices for nest",
-         shape = "Experiment") +
+         y = "Proportion of choices for nest") +
     scale_colour_light() +
     scale_size_n() +
     theme_bw(base_size = 8)
@@ -79,7 +79,7 @@ plot_curves <- function(fit, data, light, p, contrast) {
 
   set.seed(8)
   ggplot(data, aes(patt_freq_ret, first_decision)) +
-    geom_jitter(aes(shape = experiment), height = 0.04, width = 0.003,
+    geom_jitter(aes(shape = year), height = 0.04, width = 0.003,
                 alpha = 0.5, colour = "black") +
     geom_line(data = curves, aes(y = p, colour = light_lvl),
               linewidth = 0.8) +
@@ -89,10 +89,9 @@ plot_curves <- function(fit, data, light, p, contrast) {
                  linetype = "dashed", linewidth = 0.8) +
     scale_x_continuous(breaks = freq_breaks) +
     scale_colour_manual(values = light_colours(light)) +
-    scale_shape_manual(values = experiment_shapes) +
+    scale_shape_year() +
     labs(x = "Pattern frequency (cycles per degree)",
          y = "Proportion of choices for home",
-         shape = "Experiment",
          colour = expression(atop("Returning light level",
                                   ~ "(" ~ log[10] ~ "lux" ~ ")"))) +
     theme_bw() +
@@ -119,18 +118,18 @@ plot_mean_light <- function(fit, data, light, p, contrast) {
     annotate("segment", x = cutoff, xend = cutoff, y = 0, yend = p,
              colour = colour, linetype = "dashed", linewidth = 0.8) +
     # dodge so the two experiments don't overlap at shared frequencies
+    # there are shared frequencies?! doubt dodgin necessary anyway as they wont overlap in y
     geom_point(data = observed_props(data),
-               aes(y = prop_correct, size = n, shape = experiment),
+               aes(y = prop_correct, size = n, shape = year),
                position = position_dodge(width = 0.004),
                fill = "white", colour = "black") +
     scale_size_area(max_size = 8) +
-    scale_shape_manual(values = experiment_shapes) +
+    scale_shape_year() +
     scale_x_continuous(breaks = freq_breaks) +
     coord_cartesian(ylim = c(0, 1)) +
     labs(x = "Pattern frequency (cycles per degree)",
          y = "Proportion of choices for home",
          size = "Choices",
-         shape = "Experiment",
          title = bquote("Mean returning light level" ~
                           "(" * .(round(mean_light, 1)) ~ log[10] ~ "lux)")) +
     guides(shape = guide_legend(override.aes = list(size = 3))) +
