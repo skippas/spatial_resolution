@@ -67,78 +67,6 @@ plot_cutoff <- function(fit, light, p, contrast) {
     theme(legend.position = "none")
 }
 
-# fig 2: choice probability against frequency, cutoffs drawn in ####
-plot_curves <- function(fit, data, light, p, contrast) {
-  curves <- prediction_grid(light, freq_grid, contrast) %>%
-    predict_band(fit, .) %>%
-    mutate(light_lvl = light_factor(light_pred, light)) %>%
-    filter(p > .env$p)
-  vlines <- tibble(light_pred = light,
-                   cutoff = cutoff_freq(fit, light, p, contrast),
-                   light_lvl = light_factor(light_pred, light))
-
-  set.seed(8)
-  ggplot(data, aes(patt_freq_ret, first_decision)) +
-    geom_jitter(aes(shape = year), height = 0.04, width = 0.003,
-                alpha = 0.5, colour = "black") +
-    geom_line(data = curves, aes(y = p, colour = light_lvl),
-              linewidth = 0.8) +
-    geom_hline(yintercept = p, lty = 2) +
-    geom_segment(data = vlines, aes(x = cutoff, xend = cutoff,
-                                    y = 0, yend = p, colour = light_lvl),
-                 linetype = "dashed", linewidth = 0.8) +
-    scale_x_continuous(breaks = freq_breaks) +
-    scale_colour_manual(values = light_colours(light)) +
-    scale_shape_year() +
-    labs(x = "Pattern frequency (cycles per degree)",
-         y = "Proportion of choices for home",
-         colour = expression(atop("Returning light level",
-                                  ~ "(" ~ log[10] ~ "lux" ~ ")"))) +
-    theme_bw() +
-    theme(legend.justification = c("right", "top"))
-}
-
-# fig 3: choice probability against frequency at the mean light level ####
-# one point per tested frequency and experiment (observed proportion, sized by
-# n choices) under the model curve. The points pool trials across light levels;
-# the curve is at the mean.
-plot_mean_light <- function(fit, data, light, p, contrast) {
-  mean_light <- mean(data$light_pred)
-  curve <- prediction_grid(mean_light, freq_grid, contrast) %>%
-    predict_band(fit, .)
-  cutoff <- cutoff_freq(fit, mean_light, p, contrast)
-
-  # same colour the mean level gets in fig 2
-  colour <- light_colours(light)[[as.character(round(mean_light, 1))]]
-
-  ggplot(curve, aes(patt_freq_ret, p)) +
-    geom_ribbon(aes(ymin = lwr, ymax = upr), fill = colour, alpha = 0.2) +
-    geom_line(colour = colour, linewidth = 0.8) +
-    geom_hline(yintercept = p, lty = 2) +
-    annotate("segment", x = cutoff, xend = cutoff, y = 0, yend = p,
-             colour = colour, linetype = "dashed", linewidth = 0.8) +
-    # dodge so the two experiments don't overlap at shared frequencies
-    # there are shared frequencies?! doubt dodgin necessary anyway as they wont overlap in y
-    geom_point(data = observed_props(data),
-               aes(y = prop_correct, size = n, shape = year),
-               position = position_dodge(width = 0.004),
-               fill = "white", colour = "black") +
-    scale_size_area(max_size = 8) +
-    scale_shape_year() +
-    scale_x_continuous(breaks = freq_breaks) +
-    coord_cartesian(ylim = c(0, 1)) +
-    labs(x = "Pattern frequency (cycles per degree)",
-         y = "Proportion of choices for home",
-         size = "Choices",
-         title = bquote("Mean returning light level" ~
-                          "(" * .(round(mean_light, 1)) ~ log[10] ~ "lux)")) +
-    guides(shape = guide_legend(override.aes = list(size = 3))) +
-    theme_bw() +
-    theme(legend.position = "bottom",
-          legend.box = "vertical",
-          plot.title = element_text(hjust = 0.5))
-}
-
 p <- plot_sd_curves(pred_curves, plot_data)
 ggsave("../../writing/figures/contrast/performance_by_spFreq_and_light.pdf",
        device = cairo_pdf, plot = p, 
@@ -149,5 +77,3 @@ saveRDS(p, "../../writing/figures/objects/sr_curves.rds")
 
 preview(p, height = 85, width = 85)
 plot_curves(fit_2afc, plot_data, light_lvls, p = p_thresh, contrast = C)
-plot_mean_light(fit_2afc, plot_data, light_lvls, p = p_thresh, contrast = C)
-plot_cutoff(fit_2afc, light_lvls, p = p_thresh, contrast = C)
