@@ -25,7 +25,7 @@ sd(joint$light_pred)
 # all trials at 90 % contrast, from both experiments; styled like the CS figure
 # decisionByLightLevel_FacetByCont (contrast_sensitivity_analysis/scripts/plotting.R)
 dec_plot <- model_data %>%
-  filter(contrast_ret == 0.9) %>%
+  filter(contrast_ret == contrast_pred) %>%
   mutate(light_bins = light_bin(light_pred))   # shared with the CS figure (theme_paper.R)
 
 bin_labels <- dec_plot %>%
@@ -46,8 +46,8 @@ p_decisions <- dec_plot %>%
             size = 8, size.unit = "pt") +
   geom_hline(yintercept = 0.5, lty = 2)+
   scale_x_discrete(drop = FALSE)+   # every bin in every figure
-  labs(x = expression("Binned"~log[10]~"illuminance (lx)"),
-       y = "Proportion of choices for nest")+
+  scale_y_performance() +
+  labs(x = expression("Binned"~log[10]~"illuminance (lx)"))+
   # ten frequencies across both experiments: two rows so the panels stay readable
   facet_wrap(facets = "patt_freq_ret", nrow = 2,
              labeller = labeller(patt_freq_ret = freq_labels))+

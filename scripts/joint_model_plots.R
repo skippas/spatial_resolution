@@ -9,7 +9,7 @@ source("../theme_paper.R")
 # trials that match the contrast the curves are drawn at
 # year of testing for the shape legend (SR 2024, CS 2025)
 plot_data <- model_data %>%
-  filter(contrast_ret == 0.9) %>%
+  filter(contrast_ret == contrast_pred) %>%
   mutate(year = factor(lubridate::year(date)))
 
 freq_breaks <- seq(0.02, 0.16, 0.02)  # tested frequencies too close to label each
@@ -40,8 +40,8 @@ plot_sd_curves <- function(curves, data) {
                    shape = year)) +
     scale_x_continuous(breaks = freq_breaks) +
     scale_shape_year() +
-    labs(x = "Pattern frequency (cycles per degree)",
-         y = "Proportion of choices for nest") +
+    scale_y_performance() +
+    labs(x = "Pattern frequency (cycles per degree)") +
     scale_colour_light() +
     scale_size_n() +
     theme_bw(base_size = 8)
@@ -76,4 +76,3 @@ dir.create("../../writing/figures/objects", showWarnings = FALSE)
 saveRDS(p, "../../writing/figures/objects/sr_curves.rds")
 
 preview(p, height = 85, width = 85)
-plot_curves(fit_2afc, plot_data, light_lvls, p = p_thresh, contrast = C)

@@ -23,17 +23,18 @@ summary(fit_2afc)
 
 # settings shared by the predictions and the figures ####
 p_thresh <- 0.7   # performance that defines the cutoff frequency
+contrast_pred <- 0.9
 
 # predicted curves at key light levels ####
 # the round log lx steps shared with the CS figures (light_breaks, theme_paper.R)
 source("../theme_paper.R")
 freq_range <- seq(min(model_data$patt_freq_ret), max(model_data$patt_freq_ret),
                   length.out = 100)
-pred_curves <- prediction_grid(light_breaks, freq_range, contrast = 0.9) %>%
+pred_curves <- prediction_grid(light_breaks, freq_range, contrast = contrast_pred) %>%
   predict_band(fit_2afc, .)
 
 # cutoff frequency across the light range (inverse prediction / calibration) ####
 light_range <- seq(min(model_data$light_pred), max(model_data$light_pred),
                    length.out = 100)
-pred <- cutoff_table(fit_2afc, light_range, p = p_thresh, contrast = 0.9,
+pred <- cutoff_table(fit_2afc, light_range, p = p_thresh, contrast = contrast_pred,
                      n_sim = 100000)
