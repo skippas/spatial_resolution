@@ -23,11 +23,11 @@ select_model_trials <- function(joint_model) {
 # light levels to draw curves at ####
 # "sd": the mean and +- 1 and 2 sd
 # "log_steps": 1 log unit steps from the minimum, plus the mean
-light_levels <- function(data, type = c("sd", "log_steps")) {
+light_levels <- function(data, type = c("mean_sd", "log_steps")) {
   type <- match.arg(type)
   light <- data$light_pred
   switch(type,
-         sd = mean(light) + sd(light) * c(-2, -1, 0, 1, 2),
+         mean_sd = mean(light) + sd(light) * c(-2, -1, 0, 1, 2),
          log_steps = c(seq(min(light), max(light), by = 1), mean(light)))
 }
 

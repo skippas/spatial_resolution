@@ -16,7 +16,7 @@ joint %>%
   scale_fill_viridis_d(option = "G", direction = -1)+
   scale_x_continuous(limits = c(-4, 2), breaks = seq(-4,2)) +
   labs(x = "Returning light level log", 
-       y = "Count of returns to nest") +
+       y = "Number of nest returns per light bin") +
   theme_bw()
 
 mean(joint$light_pred)

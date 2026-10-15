@@ -23,18 +23,17 @@ summary(fit_2afc)
 
 # settings shared by the predictions and the figures ####
 p_thresh <- 0.7   # performance that defines the cutoff frequency
-C <- 0.9          # predictions are at 90 % contrast
 
 # predicted curves at key light levels ####
-# honestly instead of cs values should just have log unit change values that cover their reasonable range of their departures
-light_sd <- light_levels(model_data, "sd")
+# the round log lx steps shared with the CS figures (light_breaks, theme_paper.R)
+source("../theme_paper.R")
 freq_range <- seq(min(model_data$patt_freq_ret), max(model_data$patt_freq_ret),
                   length.out = 100)
-pred_curves <- prediction_grid(light_sd, freq_range, C) %>%
+pred_curves <- prediction_grid(light_breaks, freq_range, contrast = 0.9) %>%
   predict_band(fit_2afc, .)
 
 # cutoff frequency across the light range (inverse prediction / calibration) ####
 light_range <- seq(min(model_data$light_pred), max(model_data$light_pred),
                    length.out = 100)
-pred <- cutoff_table(fit_2afc, light_range, p = p_thresh, contrast = C,
+pred <- cutoff_table(fit_2afc, light_range, p = p_thresh, contrast = 0.9,
                      n_sim = 100000)

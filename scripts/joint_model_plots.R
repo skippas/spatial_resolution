@@ -1,12 +1,13 @@
 # Figures for the joint model, after the two logistic-regression figures at the
 # end of analysis_stimuli_at_pos2.R. Needs fit_2afc, model_data, pred_curves,
-# light_sd, p_thresh and C from joint_model.R, and the helpers in
+# p_thresh and C from joint_model.R, and the helpers in
 # functions/joint_model_functions.R.
 library(scico)
+source("../theme_paper.R")
 
 # trials from both experiments at 90 % contrast: all SR trials and the CS
 # trials that match the contrast the curves are drawn at
-plot_data <- model_data %>% filter(near(contrast_ret, C))
+plot_data <- model_data %>% filter(contrast_ret == 0.9)
 
 experiment_shapes <- c("sr" = 21, "cs" = 22)
 freq_breaks <- seq(0.02, 0.16, 0.02)  # tested frequencies too close to label each
@@ -19,8 +20,15 @@ freq_grid <- seq(floor(min(plot_data$patt_freq_ret) * 1000) / 1000,
                  ceiling(max(plot_data$patt_freq_ret) * 1000) / 1000,
                  by = 0.0005)
 
-# fig 0: curves at the mean and +- 1, 2 sd light levels, observed proportions ####
-# model plot - this needs to be adapted - taken from cs code
+# fig 0: curves at the shared light levels, observed proportions ####
+# I want a dashed or dotted line denoting the criterion value for SR and for CS
+# 3. Where is the histogram figure? 
+# 4. save these (acuity as function light level, perf as function light level) and histogram figures to resolution directory
+# add the schematic in.
+# add the model tables to stats script and figure out how best to feed it to latex.
+# 2. change the shape guide to be year, not experiment
+# 1. use patchwork to collect the legend of CS curve and SR curves
+
 plot_sd_curves <- function(curves, data) {
   ggplot() +
     geom_line(data = curves,
@@ -34,14 +42,8 @@ plot_sd_curves <- function(curves, data) {
     labs(x = "Pattern frequency (cycles per degree)",
          y = "Proportion of choices for nest",
          shape = "Experiment") +
-    scale_colour_scico(
-      palette = "bamako",
-      name   =  expression(atop("Illuminance", "(" * log[10] ~ "lx)")),
-      breaks = unique(curves$light_pred),
-      labels = scales::label_number(accuracy = 0.1),
-      guide  = guide_legend(reverse = TRUE,
-                            theme = theme(legend.key.spacing.y = unit(-8, "pt")))) +
-    scale_size(name = expression(italic(n)[choices])) +   # keeps default spacing
+    scale_colour_light() +
+    scale_size_n() +
     theme_bw(base_size = 8)
 }
 
@@ -138,7 +140,15 @@ plot_mean_light <- function(fit, data, light, p, contrast) {
           plot.title = element_text(hjust = 0.5))
 }
 
-plot_sd_curves(pred_curves, plot_data)
-plot_cutoff(fit_2afc, light_lvls, p = p_thresh, contrast = C)
+p <- plot_sd_curves(pred_curves, plot_data)
+ggsave("../../writing/figures/contrast/performance_by_spFreq_and_light.pdf",
+       device = cairo_pdf, plot = p, 
+       width = 85, height = 75, units = "mm")
+# plot object for the combined SR + CS figure (analyses/combine_figures.R)
+dir.create("../../writing/figures/objects", showWarnings = FALSE)
+saveRDS(p, "../../writing/figures/objects/sr_curves.rds")
+
+preview(p, height = 85, width = 85)
 plot_curves(fit_2afc, plot_data, light_lvls, p = p_thresh, contrast = C)
 plot_mean_light(fit_2afc, plot_data, light_lvls, p = p_thresh, contrast = C)
+plot_cutoff(fit_2afc, light_lvls, p = p_thresh, contrast = C)
