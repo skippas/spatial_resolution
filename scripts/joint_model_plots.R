@@ -48,22 +48,20 @@ plot_sd_curves <- function(curves, data) {
 }
 
 # fig 1: max detectable frequency as a function of light level ####
-plot_cutoff <- function(fit, light, p, contrast) {
-  curve <- cutoff_table(fit, seq(min(light), max(light), length.out = 100),
-                        p, contrast, n_sim = 5000)
-  pts <- tibble(light_pred = sort(light[-length(light)]),
-                cutoff = cutoff_freq(fit, light_pred, p, contrast))
-  ggplot(curve, aes(light_pred, cutoff, colour = light_pred)) +
-    geom_ribbon(aes(ymin = lwr, ymax = upr), colour = NA, fill = "white",
-                alpha = 0.2) +
-    geom_line(linewidth = 1.2) +
-    geom_point(data = pts, aes(fill = light_pred), shape = 21, size = 2,
-               colour = "black") +
-    scale_colour_viridis_c(option = "D") +
-    scale_fill_viridis_c(option = "D") +
-    labs(x = expression("Returning light level" ~ "(" ~ log[10] ~ "lux" ~ ")"),
-         y = paste0("Max detectable freq. at P = ", p, "\n(cycles per degree)")) +
-    theme_dark() +
+# curve: cutoff_table() across the light range (pred in joint_model.R). Styled
+# like the CS sensitivity figure: dots at the shared light levels, coloured as
+# the curves in fig 0 (each is where its curve crosses p)
+plot_cutoff <- function(curve, fit, p, contrast) {
+  pts <- tibble(light_pred = light_breaks,
+                cutoff = cutoff_freq(fit, light_breaks, p, contrast))
+  ggplot(curve, aes(light_pred, cutoff)) +
+    geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "grey70", alpha = 0.5) +
+    geom_line() +
+    geom_point(data = pts, aes(fill = light_pred), shape = 21, size = 2) +
+    scale_colour_light(aesthetics = "fill") +
+    scale_x_light() +
+    labs(y = "Maximum detectable frequency (cycles/°)") +
+    theme_paper +
     theme(legend.position = "none")
 }
 
@@ -74,5 +72,11 @@ ggsave("../../writing/figures/contrast/performance_by_spFreq_and_light.pdf",
 # plot object for the combined SR + CS figure (analyses/combine_figures.R)
 dir.create("../../writing/figures/objects", showWarnings = FALSE)
 saveRDS(p, "../../writing/figures/objects/sr_curves.rds")
+
+p_cutoff <- plot_cutoff(pred, fit_2afc, p = p_thresh, contrast = contrast_pred)
+ggsave("../../writing/figures/resolution/max_frequency_versus_log_light.pdf",
+       device = cairo_pdf, plot = p_cutoff,
+       width = 85, height = 60, units = "mm")
+saveRDS(p_cutoff, "../../writing/figures/objects/sr_threshold.rds")
 
 preview(p, height = 85, width = 85)
