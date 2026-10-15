@@ -18,6 +18,6 @@ joint_model <- joint %>%
 # joint model ####
 source("scripts/joint_model.R")
 
-source("scripts/descriptive_plots.R")
+source("scripts/exploratory_plots.R")
 
 source("scripts/joint_model_plots.R")
