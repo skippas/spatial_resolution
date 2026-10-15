@@ -21,3 +21,5 @@ source("scripts/joint_model.R")
 source("scripts/exploratory_plots.R")
 
 source("scripts/joint_model_plots.R")
+
+source("scripts/joint_model_tables.R")
