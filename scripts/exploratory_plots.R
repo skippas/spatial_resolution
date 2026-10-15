@@ -1,5 +1,6 @@
 # exploratory and descriptive plots of the trial data
 # Needs joint (join_2024-25_datasets.R) and model_data (joint_model.R).
+source("../theme_paper.R")
 
 # what light levels are they returning at? 
 p_light_session <- joint %>% 
@@ -25,14 +26,7 @@ sd(joint$light_pred)
 # decisionByLightLevel_FacetByCont (contrast_sensitivity_analysis/scripts/plotting.R)
 dec_plot <- model_data %>%
   filter(contrast_ret == 0.9) %>%
-  mutate(light_bins = cut(light_pred, breaks = 5))
-
-# label each bin by its midpoint; the cut() intervals are too long to read
-bin_mids <- levels(dec_plot$light_bins) %>%
-  str_remove_all("[\\(\\]\\[]") %>%
-  str_split(",") %>%
-  map_dbl(~ mean(as.numeric(.x)))
-bin_names <- setNames(sprintf("%.1f", bin_mids), levels(dec_plot$light_bins))
+  mutate(light_bins = light_bin(light_pred))   # shared with the CS figure (theme_paper.R)
 
 bin_labels <- dec_plot %>%
   group_by(patt_freq_ret, light_bins) %>%
@@ -44,16 +38,14 @@ freq_labels <- setNames(paste0(freqs, " cycles/°"), freqs)
 p_decisions <- dec_plot %>%
   ggplot(aes(x = light_bins, fill = as.character(first_decision)))+
   geom_bar(position = "fill", colour = "black", linewidth = 0.3) +
-  scale_fill_manual(name   = NULL,
-                    values = c("1" = "grey50", "0" = "white"),
-                    labels = c("1" = "For nest", "0" = "For dummy")) +
+  scale_fill_choice() +
   # single count at the top of each full bar
   geom_text(data = bin_labels,
             aes(x = light_bins, y = 0.9, label = n),
             inherit.aes = FALSE,
             size = 8, size.unit = "pt") +
   geom_hline(yintercept = 0.5, lty = 2)+
-  scale_x_discrete(labels = bin_names)+
+  scale_x_discrete(drop = FALSE)+   # every bin in every figure
   labs(x = expression("Binned"~log[10]~"illuminance (lx)"),
        y = "Proportion of choices for nest")+
   # ten frequencies across both experiments: two rows so the panels stay readable
@@ -63,9 +55,11 @@ p_decisions <- dec_plot %>%
   theme(legend.key.spacing.y = unit(0, "mm"),   # keys touch (ggplot2 ≥ 3.5)
         legend.key.width     = unit(4, "mm"),
         legend.key.height    = unit(6, "mm"),
-        strip.background = ggh4x::element_part_rect(side = "b", colour = "black", fill = NA),
-        axis.text.x = element_text(angle = 45, hjust = 1))
+        strip.background = ggh4x::element_part_rect(side = "b", colour = "black", fill = NA))
 
 ggsave("../../writing/figures/resolution/decisionByLightLevel_FacetByPattFreq.pdf",
        device = cairo_pdf, plot = p_decisions,
        width = 180, height = 120, units = "mm")
+# plot object for the combined SR + CS figure (analyses/combine_figures.R)
+dir.create("../../writing/figures/objects", showWarnings = FALSE)
+saveRDS(p_decisions, "../../writing/figures/objects/sr_decisions.rds")
