@@ -51,9 +51,9 @@ plot_sd_curves <- function(curves, data) {
 # curve: cutoff_table() across the light range (pred in joint_model.R). Styled
 # like the CS sensitivity figure: dots at the shared light levels, coloured as
 # the curves in fig 0 (each is where its curve crosses p)
-plot_cutoff <- function(curve, fit, p, contrast) {
+plot_cutoff <- function(curve, fit, p) {
   pts <- tibble(light_pred = light_breaks,
-                cutoff = cutoff_freq(fit, light_breaks, p, contrast))
+                cutoff = cutoff_freq(fit, light_breaks, p))
   ggplot(curve, aes(light_pred, cutoff)) +
     geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "grey70", alpha = 0.5) +
     geom_line() +
@@ -73,7 +73,7 @@ ggsave("../../writing/figures/contrast/performance_by_spFreq_and_light.pdf",
 dir.create("../../writing/figures/objects", showWarnings = FALSE)
 saveRDS(p, "../../writing/figures/objects/sr_curves.rds")
 
-p_cutoff <- plot_cutoff(pred, fit_2afc, p = p_thresh, contrast = contrast_pred)
+p_cutoff <- plot_cutoff(pred, fit_2afc, p = p_thresh)
 ggsave("../../writing/figures/resolution/max_frequency_versus_log_light.pdf",
        device = cairo_pdf, plot = p_cutoff,
        width = 85, height = 60, units = "mm")

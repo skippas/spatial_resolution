@@ -8,6 +8,7 @@
 # after the learning period (as in analysis_stimuli_at_pos2.R, where these nests
 # were 1.4V, 1.5H, 2.6V, 2.8V and 2.9H).
 # CS: all cleaned trials (as in contrast_sensitivity_model.R).
+# joint_model.R then keeps the 90 % contrast trials.
 select_model_trials <- function(joint_model) {
   sr_nests <- c("4.1.24", "5.1.24", "6.2.24", "9.2.24", "11.2.24")
   sr_trials <- joint_model %>%
@@ -32,9 +33,9 @@ light_levels <- function(data, type = c("mean_sd", "log_steps")) {
 }
 
 # predictions ####
-# every combination of light level and frequency, at one contrast
-prediction_grid <- function(light, freq, contrast) {
-  expand_grid(light_pred = light, patt_freq_ret = freq, contrast_ret = contrast)
+# every combination of light level and frequency
+prediction_grid <- function(light, freq) {
+  expand_grid(light_pred = light, patt_freq_ret = freq)
 }
 
 # predicted probability with a confidence band. The band is built on the link
@@ -50,28 +51,26 @@ predict_band <- function(fit, newdata, level = 0.95) {
 }
 
 # cutoff frequency (inverse prediction) ####
-# frequency at which the linear predictor equals eta, given light and contrast
-inv_prediction <- function(betas, eta, light, contrast) {
-  unname((eta - betas["(Intercept)"] - betas["light_pred"] * light -
-            betas["log10(contrast_ret)"] * log10(contrast)) /
+# frequency at which the linear predictor equals eta, given light
+inv_prediction <- function(betas, eta, light) {
+  unname((eta - betas["(Intercept)"] - betas["light_pred"] * light) /
            betas["patt_freq_ret"])
 }
 
 # cutoff frequency at performance p for each light level
-cutoff_freq <- function(fit, light, p, contrast) {
-  inv_prediction(coef(fit), fit$family$linkfun(p), light, contrast)
+cutoff_freq <- function(fit, light, p) {
+  inv_prediction(coef(fit), fit$family$linkfun(p), light)
 }
 
 # the same, with a confidence interval from coefficients simulated from the
 # fit's covariance matrix
-cutoff_table <- function(fit, light, p, contrast, n_sim = 10000,
-                         level = 0.95) {
+cutoff_table <- function(fit, light, p, n_sim = 10000, level = 0.95) {
   eta <- fit$family$linkfun(p)
   sims <- MASS::mvrnorm(n_sim, coef(fit), vcov(fit)) %>%
-    apply(1, function(b) inv_prediction(b, eta, light, contrast)) %>%
+    apply(1, function(b) inv_prediction(b, eta, light)) %>%
     matrix(nrow = length(light))  # keeps one row per light level when light is a single value
   tibble(light_pred = light,
-         cutoff = cutoff_freq(fit, light, p, contrast),
+         cutoff = cutoff_freq(fit, light, p),
          lwr = apply(sims, 1, quantile, (1 - level) / 2),
          upr = apply(sims, 1, quantile, 1 - (1 - level) / 2))
 }

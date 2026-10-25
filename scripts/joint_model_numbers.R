@@ -27,10 +27,9 @@ setting_numbers <- c(
 
 # coefficients of the 2AFC fit ####
 # e.g. \jmLightEst, \jmLightSE, \jmLightZ, \jmLightP ("$p = 0.010$")
-coef_names <- c("(Intercept)"         = "jmIntercept",
-                "light_pred"          = "jmLight",
-                "patt_freq_ret"       = "jmFreq",
-                "log10(contrast_ret)" = "jmContrastCoef")
+coef_names <- c("(Intercept)"   = "jmIntercept",
+                "light_pred"    = "jmLight",
+                "patt_freq_ret" = "jmFreq")
 
 coefs <- tidy(fit_2afc) %>% mutate(name = coef_names[term])
 coef_numbers <- c(setNames(num(coefs$estimate, 2), paste0(coefs$name, "Est")),
