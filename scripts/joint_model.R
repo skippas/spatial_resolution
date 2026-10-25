@@ -5,7 +5,8 @@ library(psyphy)
 source("functions/joint_model_functions.R")
 
 # settings shared by the model, the predictions and the figures ####
-p_thresh <- 0.7   # performance that defines the cutoff frequency
+p_thresh <- 0.65  # performance that defines the cutoff frequency: half way between
+                  # chance (0.5) and the ~0.8 the bees reach at best (lapses)
 contrast_pred <- 0.9   # the one contrast modelled (all SR trials were at 90 %)
 
 # trial selection ####

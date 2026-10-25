@@ -22,7 +22,7 @@ data_numbers <- c(
 
 # settings ####
 setting_numbers <- c(
-  jmCriterion = num(p_thresh, 1),
+  jmCriterion = num(p_thresh, 2),
   jmContrast  = paste0(num(contrast_pred * 100, 0), "\\%"))
 
 # coefficients of the 2AFC fit ####
