@@ -27,7 +27,7 @@ contrast_pred <- 0.9
 
 # predicted curves at key light levels ####
 # the round log lx steps shared with the CS figures (light_breaks, theme_paper.R)
-source("../theme_paper.R")
+source("../shared/theme_paper.R")
 freq_range <- seq(min(model_data$patt_freq_ret), max(model_data$patt_freq_ret),
                   length.out = 100)
 pred_curves <- prediction_grid(light_breaks, freq_range, contrast = contrast_pred) %>%
@@ -38,3 +38,8 @@ light_range <- seq(min(model_data$light_pred), max(model_data$light_pred),
                    length.out = 100)
 pred <- cutoff_table(fit_2afc, light_range, p = p_thresh, contrast = contrast_pred,
                      n_sim = 100000)
+
+# export for the Theobald et al. (2006) comparison in
+# ../spatiotemporal_summation (scripts/overlay_behaviour.R)
+dir.create("output", showWarnings = FALSE)
+write.csv(pred, "output/cutoff_vs_light.csv", row.names = FALSE)

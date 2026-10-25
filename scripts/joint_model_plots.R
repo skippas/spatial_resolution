@@ -3,7 +3,7 @@
 # p_thresh and C from joint_model.R, and the helpers in
 # functions/joint_model_functions.R.
 library(scico)
-source("../theme_paper.R")
+source("../shared/theme_paper.R")
 
 # trials from both experiments at 90 % contrast: all SR trials and the CS
 # trials that match the contrast the curves are drawn at

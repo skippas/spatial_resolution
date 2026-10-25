@@ -1,6 +1,6 @@
 # exploratory and descriptive plots of the trial data
 # Needs joint (join_2024-25_datasets.R) and model_data (joint_model.R).
-source("../theme_paper.R")
+source("../shared/theme_paper.R")
 
 # what light levels are they returning at? 
 p_light_session <- joint %>% 
