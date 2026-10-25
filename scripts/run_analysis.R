@@ -2,6 +2,7 @@
 #   load + clean both experiments -> join -> joint model
 
 library(tidyverse)
+set.seed(1)  # the CIs are simulated; a fixed seed keeps the reported numbers stable between runs
 source("functions/drop_unused.R")
 
 # load and clean both experiments (leaves `sr` and `cs`)
@@ -23,3 +24,5 @@ source("scripts/exploratory_plots.R")
 source("scripts/joint_model_plots.R")
 
 source("scripts/joint_model_tables.R")
+
+source("scripts/joint_model_numbers.R")

@@ -25,8 +25,10 @@ list("Logit" = fit_logit, "2AFC logit" = fit_2afc) %>%
 
 # cutoff frequency at the figure light levels ####
 # frequency at which the 2AFC fit predicts p_thresh correct, at contrast_pred
-cutoff_table(fit_2afc, light_breaks, p = p_thresh, contrast = contrast_pred,
-             n_sim = 100000) %>%
+# (kept as cutoffs so joint_model_numbers.R cites the same values)
+cutoffs <- cutoff_table(fit_2afc, light_breaks, p = p_thresh, contrast = contrast_pred,
+                        n_sim = 100000)
+cutoffs %>%
   transmute("Illuminance (log$_{10}$ lx)" = num(light_pred, 0),
             "Cutoff (cycles/$^\\circ$)" = num(cutoff, 3),
             "95\\% CI" = paste0("[", num(lwr, 3), ", ", num(upr, 3), "]")) %>%
