@@ -10,6 +10,8 @@ source("scripts/loading_cleaning.R")
 source("scripts/load_cs_data.R")
 
 source("scripts/join_2024-25_datasets.R")
+# numbers on all returns of both seasons, for the opening of the results
+source("scripts/returns_numbers.R")
 # trials usable in the joint model: a decision, a spatial frequency and a light level
 # need to check analysis at pos2 code to see what rows I was excluding / including there. 
 # I need to go through data and have a solid training / testing column for excluding / including data.
