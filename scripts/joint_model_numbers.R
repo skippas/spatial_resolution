@@ -1,8 +1,9 @@
 # Numbers cited in the text for the joint model, written as LaTeX macros to
 # spatialVis_writing/tables/joint_model_numbers.tex. Cite them in the text by name, e.g.
 # \jmNChoices or \jmCutoffZero. All names start with jm (joint model).
-# Needs fit_2afc, model_data, p_thresh and contrast_pred from joint_model.R,
-# cutoffs from joint_model_tables.R and light_breaks from theme_paper.R.
+# Needs fit_2afc, model_data, p_thresh, contrast_pred and cutoff_slope from
+# joint_model.R, cutoffs from joint_model_tables.R and light_breaks
+# from theme_paper.R.
 library(broom)
 source("../shared/latex_tables.R")  # num(), p_text(), name_num(), write_numbers()
 
@@ -18,7 +19,13 @@ data_numbers <- c(
   jmNNestsCS   = n_distinct(cs_trials$nest),
   jmNBees      = NA,  # no bee ID column in the data yet
   jmLightMin   = num(min(model_data$light_pred), 1),
-  jmLightMax   = num(max(model_data$light_pred), 1))
+  jmLightMax   = num(max(model_data$light_pred), 1),
+  jmLightMean  = num(mean(model_data$light_pred), 2),
+  jmLightSD    = num(sd(model_data$light_pred), 2),
+  # spatial frequencies tested (cycles/deg)
+  jmNFreqs     = n_distinct(model_data$patt_freq_ret),
+  jmFreqMin    = num(min(model_data$patt_freq_ret), 3),
+  jmFreqMax    = num(max(model_data$patt_freq_ret), 3))
 
 # settings ####
 setting_numbers <- c(
@@ -45,5 +52,12 @@ cutoff_numbers <- c(setNames(num(cutoffs$cutoff, 3), cutoff_names),
                     setNames(num(cutoffs$lwr, 3), paste0(cutoff_names, "Lwr")),
                     setNames(num(cutoffs$upr, 3), paste0(cutoff_names, "Upr")))
 
-c(data_numbers, setting_numbers, coef_numbers, cutoff_numbers) %>%
+# slope of the cutoff frequency against light (cutoff_slope, joint_model.R) ####
+# cycles/deg per log10 lx, e.g. \jmSlope (\jmSlopeLwr to \jmSlopeUpr)
+slope_numbers <- c(
+  jmSlope    = num(cutoff_slope$slope, 3),
+  jmSlopeLwr = num(cutoff_slope$lwr, 3),
+  jmSlopeUpr = num(cutoff_slope$upr, 3))
+
+c(data_numbers, setting_numbers, coef_numbers, cutoff_numbers, slope_numbers) %>%
   write_numbers("joint_model_numbers.tex")

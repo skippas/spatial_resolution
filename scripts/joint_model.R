@@ -42,6 +42,21 @@ light_range <- seq(min(model_data$light_pred), max(model_data$light_pred),
                    length.out = 100)
 pred <- cutoff_table(fit_2afc, light_range, p = p_thresh, n_sim = 100000)
 
+# slope of the cutoff frequency against log illuminance ####
+# With the additive model the cutoff line is straight, with slope
+# -b_light / b_freq (cycles/deg per log10 lx), whatever the criterion. CI from
+# coefficients simulated from the fit's covariance matrix, as for the cutoffs.
+# with_preserve_seed() restores the random state afterwards, so the cutoff CIs
+# simulated later (joint_model_tables.R) are unchanged by this.
+cutoff_slope <- withr::with_preserve_seed({
+  sims <- MASS::mvrnorm(100000, coef(fit_2afc), vcov(fit_2afc))
+  slope_sims <- -sims[, "light_pred"] / sims[, "patt_freq_ret"]
+  tibble(slope = unname(-coef(fit_2afc)["light_pred"] / coef(fit_2afc)["patt_freq_ret"]),
+         lwr   = unname(quantile(slope_sims, 0.025)),
+         upr   = unname(quantile(slope_sims, 0.975)))
+})
+cutoff_slope
+
 # export for the Theobald et al. (2006) comparison in
 # ../spatiotemporal_summation (scripts/overlay_behaviour.R)
 dir.create("output", showWarnings = FALSE)
