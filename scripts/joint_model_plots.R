@@ -66,17 +66,17 @@ plot_cutoff <- function(curve, fit, p) {
 }
 
 p <- plot_sd_curves(pred_curves, plot_data)
-ggsave("../../writing/figures/contrast/performance_by_spFreq_and_light.pdf",
+ggsave(file.path(paper_dir, "figures/contrast/performance_by_spFreq_and_light.pdf"),
        device = cairo_pdf, plot = p, 
        width = 85, height = 75, units = "mm")
 # plot object for the combined SR + CS figure (analyses/combine_figures.R)
-dir.create("../../writing/figures/objects", showWarnings = FALSE)
-saveRDS(p, "../../writing/figures/objects/sr_curves.rds")
+dir.create(file.path(paper_dir, "figures/objects"), showWarnings = FALSE)
+saveRDS(p, file.path(paper_dir, "figures/objects/sr_curves.rds"))
 
 p_cutoff <- plot_cutoff(pred, fit_2afc, p = p_thresh)
-ggsave("../../writing/figures/resolution/max_frequency_versus_log_light.pdf",
+ggsave(file.path(paper_dir, "figures/resolution/max_frequency_versus_log_light.pdf"),
        device = cairo_pdf, plot = p_cutoff,
        width = 85, height = 60, units = "mm")
-saveRDS(p_cutoff, "../../writing/figures/objects/sr_threshold.rds")
+saveRDS(p_cutoff, file.path(paper_dir, "figures/objects/sr_threshold.rds"))
 
 preview(p, height = 85, width = 85)

@@ -6,7 +6,10 @@ joint_cols <- c("ymaze", "nest", "flight", "date", "t_ret", "session",
                 "home_orient", "side_home_ret", "position_ret", "view_dist",
                 "cycle_width_ret", "patt_period", "patt_freq_ret",
                 "contrast_ret", "first_decision", "light_pred",
-                "training_or_testing")
+                "training_or_testing",
+                # from add_light_level(); not used by the model, kept for the
+                # return-time histogram (light_conversion_factors/plot_light_model.R)
+                "time_rel_setrise", "light_pred_extrapolated")
 
 standardise <- function(df, experiment) {
   df %>%

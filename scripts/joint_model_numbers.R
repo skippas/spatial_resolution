@@ -1,5 +1,5 @@
 # Numbers cited in the text for the joint model, written as LaTeX macros to
-# writing/tables/joint_model_numbers.tex. Cite them in the text by name, e.g.
+# spatialVis_writing/tables/joint_model_numbers.tex. Cite them in the text by name, e.g.
 # \jmNChoices or \jmCutoffZero. All names start with jm (joint model).
 # Needs fit_2afc, model_data, p_thresh and contrast_pred from joint_model.R,
 # cutoffs from joint_model_tables.R and light_breaks from theme_paper.R.

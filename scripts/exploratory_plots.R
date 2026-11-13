@@ -44,7 +44,7 @@ p_decisions <- dec_plot %>%
             aes(x = light_bins, y = 0.9, label = n),
             inherit.aes = FALSE,
             size = 8, size.unit = "pt") +
-  geom_hline(yintercept = 0.5, lty = 2)+
+  geom_hline(yintercept = p_thresh, lty = 2)+   # performance criterion (joint_model.R)
   scale_x_discrete(drop = FALSE)+   # every bin in every figure
   scale_y_performance() +
   labs(x = expression("Binned"~log[10]~"illuminance (lx)"))+
@@ -57,9 +57,9 @@ p_decisions <- dec_plot %>%
         legend.key.height    = unit(6, "mm"),
         strip.background = ggh4x::element_part_rect(side = "b", colour = "black", fill = NA))
 
-ggsave("../../writing/figures/resolution/decisionByLightLevel_FacetByPattFreq.pdf",
+ggsave(file.path(paper_dir, "figures/resolution/decisionByLightLevel_FacetByPattFreq.pdf"),
        device = cairo_pdf, plot = p_decisions,
-       width = 180, height = 120, units = "mm")
+       width = 174, height = 120, units = "mm")
 # plot object for the combined SR + CS figure (analyses/combine_figures.R)
-dir.create("../../writing/figures/objects", showWarnings = FALSE)
-saveRDS(p_decisions, "../../writing/figures/objects/sr_decisions.rds")
+dir.create(file.path(paper_dir, "figures/objects"), showWarnings = FALSE)
+saveRDS(p_decisions, file.path(paper_dir, "figures/objects/sr_decisions.rds"))

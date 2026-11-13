@@ -1,4 +1,4 @@
-# Tables for the joint model, written as LaTeX fragments to writing/tables.
+# Tables for the joint model, written as LaTeX fragments to spatialVis_writing/tables.
 # Needs fit_2afc and p_thresh from joint_model.R and light_breaks from
 # theme_paper.R.
 library(broom)
